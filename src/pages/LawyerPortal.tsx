@@ -113,9 +113,11 @@ export default function LawyerPortal() {
         <div className="max-w-6xl mx-auto flex h-[calc(100vh-8rem)] gap-6">
 
             <div className="w-1/3 flex flex-col gap-4">
-                <header className="mb-4">
-                    <h1 className="text-2xl font-bold text-text-main flex items-center gap-2"><Briefcase className="w-6 h-6 text-emerald-500" /> My Requests</h1>
-                    <p className="text-text-muted text-sm">Action items requiring legal counsel advice.</p>
+                <header className="mb-6 flex flex-col gap-1">
+                    <p className="text-sm font-medium text-text-muted tracking-wide uppercase">Counsel Actions</p>
+                    <h1 className="text-2xl font-bold text-text-main flex items-center gap-2">
+                        <Briefcase className="w-6 h-6 text-primary" /> My Requests
+                    </h1>
                 </header>
 
                 <div className="flex-1 overflow-y-auto space-y-4 pr-2">
@@ -173,7 +175,7 @@ export default function LawyerPortal() {
                                         <div className="mt-4 flex justify-end">
                                             <button
                                                 onClick={() => handleSaveRecommendation(req.id)}
-                                                className="bg-emerald-600 hover:bg-emerald-500 text-text-main font-medium px-6 py-2.5 rounded-xl transition-colors shadow-lg shadow-emerald-900/20 flex items-center gap-2"
+                                                className="bg-primary hover:bg-primary-hover text-white font-medium px-6 py-2.5 rounded-xl transition-colors shadow-lg shadow-primary/20 flex items-center gap-2"
                                             >
                                                 Submit Counsel
                                                 <Scale className="w-4 h-4" />

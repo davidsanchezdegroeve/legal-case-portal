@@ -40,10 +40,10 @@ const Layout = () => {
                             navigate('/dashboard');
                             setIsMobileMenuOpen(false);
                         }}
-                        className="text-xl font-bold tracking-tight text-text-main flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+                        className="text-[13px] font-bold tracking-widest uppercase text-text-main flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
                     >
-                        <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-amber-500 flex items-center justify-center shadow-lg">
-                            <Scale className="w-4 h-4 text-text-main" />
+                        <span className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
+                            <Scale className="w-4 h-4 text-primary" />
                         </span>
                         Legal Portal
                     </h1>
@@ -63,8 +63,8 @@ const Layout = () => {
                             onClick={() => setIsMobileMenuOpen(false)}
                             className={({ isActive }) =>
                                 `flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${isActive
-                                    ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]'
-                                    : 'text-text-muted hover:bg-slate-800/50 hover:text-text-main border border-transparent'
+                                    ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
+                                    : 'text-text-muted hover:bg-bg-surface-hover hover:text-text-main border border-transparent'
                                 }`
                             }
                         >
@@ -80,7 +80,7 @@ const Layout = () => {
                             navigate('/profile');
                             setIsMobileMenuOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-800/30 border border-slate-700/50 hover:bg-slate-800/60 hover:border-blue-500/50 transition-all text-left mb-2"
+                        className="w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-bg-surface-hover border border-border-default hover:border-primary/50 transition-all text-left mb-2"
                     >
                         {profile?.avatar_url ? (
                             <img src={profile.avatar_url} alt="Avatar" className="w-8 h-8 rounded-full object-cover shadow-md" />
@@ -102,7 +102,7 @@ const Layout = () => {
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col overflow-hidden relative">
-                <header className="h-16 border-b border-border-default bg-bg-base/80 backdrop-blur-md flex items-center px-4 md:px-8 justify-between z-10 w-full">
+                <header className="h-16 border-b border-border-default bg-bg-surface/90 backdrop-blur-md flex items-center px-4 md:px-8 justify-between z-10 w-full">
                     <div className="flex items-center gap-3">
                         <button
                             className="md:hidden p-2 -ml-2 text-text-muted hover:text-text-main rounded-lg hover:bg-slate-800 transition-colors"

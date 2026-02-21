@@ -3,8 +3,10 @@ import { supabase } from '../lib/supabase';
 
 import { TrendingUp, AlertTriangle, ShieldCheck, Scale, FileText } from 'lucide-react';
 import { TranslatedText } from '../components/ui/TranslatedText';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Dashboard() {
+    const { profile } = useAuth();
     const [totalDebt, setTotalDebt] = useState<number>(0);
     const [unpaidWeeks, setUnpaidWeeks] = useState<number>(0);
     const [evidenceCount, setEvidenceCount] = useState<number>(0);
@@ -69,9 +71,10 @@ export default function Dashboard() {
 
     return (
         <div className="max-w-6xl mx-auto pb-12">
-            <header className="mb-8">
-                <h1 className="text-3xl font-bold text-text-main mb-2">Legal Strategy Overview</h1>
-                <p className="text-text-muted">High-level summary of the shareholder dispute case.</p>
+            <header className="mb-8 flex flex-col gap-1">
+                <p className="text-sm font-medium text-text-muted tracking-wide uppercase">Premium Case Access</p>
+                <h1 className="text-3xl font-bold text-text-main">Good Morning, {profile?.full_name?.split(' ')[0] || 'Counsel'}</h1>
+                <p className="text-text-muted text-sm mt-1 font-medium">{profile?.role === 'admin' ? 'System Administrator' : 'Lead Attorney • Senior Partner'}</p>
             </header>
 
             {/* Economic Duress Monitor Alert */}
@@ -94,47 +97,45 @@ export default function Dashboard() {
 
             {/* Primary KPI Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="glass-panel p-6 rounded-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
-                    <div className="flex justify-between items-start mb-4 relative z-10">
-                        <h3 className="text-text-muted font-medium tracking-wide text-sm uppercase">Total Calculated Debt</h3>
-                        <div className="p-2 bg-bg-surface rounded-lg border border-slate-800">
-                            <TrendingUp className="w-5 h-5 text-amber-500" />
-                        </div>
+                {/* Debt Card */}
+                <div className="bg-bg-surface p-5 rounded-xl shadow-sm border border-border-default flex flex-col gap-3 transition-transform hover:-translate-y-1">
+                    <div className="flex items-center justify-between">
+                        <span className="text-amber-500 bg-amber-500/10 p-2 rounded-lg">
+                            <TrendingUp className="w-5 h-5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-rose-500 bg-rose-500/10 px-2 py-1 rounded-full uppercase tracking-tighter border border-rose-500/20">Critical</span>
                     </div>
-                    <div className="relative z-10">
-                        <div className="text-4xl font-bold text-text-main mb-1">
-                            {formatCurrency(totalDebt)}
-                        </div>
-                        <p className="text-xs text-text-muted">Includes all GOSI salary gaps & accrued rates</p>
+                    <div>
+                        <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">Total Calculated Debt</p>
+                        <p className="text-3xl font-bold text-text-main mt-1">{formatCurrency(totalDebt)}</p>
                     </div>
                 </div>
 
-                <div className="glass-panel p-6 rounded-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
-                    <div className="flex justify-between items-start mb-4 relative z-10">
-                        <h3 className="text-text-muted font-medium tracking-wide text-sm uppercase">Verified Evidence</h3>
-                        <div className="p-2 bg-bg-surface rounded-lg border border-slate-800">
-                            <ShieldCheck className="w-5 h-5 text-blue-400" />
-                        </div>
+                {/* Evidence Card */}
+                <div className="bg-bg-surface p-5 rounded-xl shadow-sm border border-border-default flex flex-col gap-3 transition-transform hover:-translate-y-1">
+                    <div className="flex items-center justify-between">
+                        <span className="text-primary bg-primary/10 p-2 rounded-lg">
+                            <ShieldCheck className="w-5 h-5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-full uppercase tracking-tighter border border-emerald-500/20">Verified</span>
                     </div>
-                    <div className="relative z-10">
-                        <div className="text-4xl font-bold text-text-main mb-1">{evidenceCount}</div>
-                        <p className="text-xs text-text-muted">Government & Official Documents in Vault</p>
+                    <div>
+                        <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">Verified Evidence</p>
+                        <p className="text-3xl font-bold text-text-main mt-1">{evidenceCount}</p>
                     </div>
                 </div>
 
-                <div className="glass-panel p-6 rounded-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
-                    <div className="flex justify-between items-start mb-4 relative z-10">
-                        <h3 className="text-text-muted font-medium tracking-wide text-sm uppercase">Legal Risk Level</h3>
-                        <div className="p-2 bg-bg-surface rounded-lg border border-slate-800">
-                            <Scale className="w-5 h-5 text-emerald-400" />
-                        </div>
+                {/* Risk Level Card */}
+                <div className="bg-bg-surface p-5 rounded-xl shadow-sm border border-border-default flex flex-col gap-3 transition-transform hover:-translate-y-1">
+                    <div className="flex items-center justify-between">
+                        <span className="text-emerald-500 bg-emerald-500/10 p-2 rounded-lg">
+                            <Scale className="w-5 h-5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2 py-1 rounded-full uppercase tracking-tighter border border-amber-500/20">Active</span>
                     </div>
-                    <div className="relative z-10">
-                        <div className="text-4xl font-bold text-emerald-400 mb-1">High</div>
-                        <p className="text-xs text-text-muted">Based on recent hostile correspondence</p>
+                    <div>
+                        <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">Legal Risk Level</p>
+                        <p className="text-3xl font-bold text-text-main mt-1">High</p>
                     </div>
                 </div>
             </div>

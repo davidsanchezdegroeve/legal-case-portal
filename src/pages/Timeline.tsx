@@ -89,19 +89,19 @@ export default function Timeline() {
 
     return (
         <div className="max-w-4xl mx-auto pb-12">
-            <header className="mb-10 flex justify-between items-end">
-                <div>
-                    <h1 className="text-3xl font-bold text-text-main mb-2">Event Timeline</h1>
-                    <p className="text-text-muted">Chronological ledger of legal and operational incidents.</p>
+            <header className="mb-10 flex flex-col gap-1">
+                <p className="text-sm font-medium text-text-muted tracking-wide uppercase">Historical Ledger</p>
+                <div className="flex justify-between items-end">
+                    <h1 className="text-3xl font-bold text-text-main">Event Timeline</h1>
+                    {isAdmin && (
+                        <button
+                            onClick={() => setShowAdd(!showAdd)}
+                            className="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-xl transition-colors shadow-lg shadow-primary/20"
+                        >
+                            {showAdd ? 'Cancel' : <><Plus className="w-5 h-5" /> Add Incident</>}
+                        </button>
+                    )}
                 </div>
-                {isAdmin && (
-                    <button
-                        onClick={() => setShowAdd(!showAdd)}
-                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-text-main px-4 py-2 rounded-xl transition-colors shadow-lg shadow-blue-900/20"
-                    >
-                        {showAdd ? 'Cancel' : <><Plus className="w-5 h-5" /> Add Incident</>}
-                    </button>
-                )}
             </header>
 
             {showAdd && isAdmin && (
