@@ -35,7 +35,7 @@ export function DualLanguageInput({
         if (hasTranslated) setHasTranslated(false); // Reset translation flag if they edit again
     };
 
-    const inputClasses = "w-full bg-[#151822]/80 border border-slate-700 rounded-xl pl-4 pr-11 py-2.5 text-slate-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 outline-none transition-all placeholder:text-slate-600";
+    const inputClasses = "w-full bg-bg-surface/80 border border-slate-700 rounded-xl pl-4 pr-11 py-2.5 text-slate-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 outline-none transition-all placeholder:text-slate-600";
 
     return (
         <div className="space-y-1.5">

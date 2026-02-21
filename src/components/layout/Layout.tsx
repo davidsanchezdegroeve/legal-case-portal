@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { LayoutDashboard, Clock, FileBadge, Scale, LogOut, Menu, X, User } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
+import { LayoutDashboard, Clock, FileBadge, Scale, LogOut, Menu, X, User, Sun, Moon } from 'lucide-react';
 
 const Layout = () => {
     const { profile, signOut } = useAuth();
+    const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -22,7 +24,7 @@ const Layout = () => {
     ];
 
     return (
-        <div className="flex h-screen bg-[#0f111a] text-slate-100 overflow-hidden font-sans">
+        <div className="flex h-screen bg-bg-base text-text-main overflow-hidden font-sans">
             {/* Mobile Sidebar Overlay */}
             {isMobileMenuOpen && (
                 <div
@@ -32,22 +34,22 @@ const Layout = () => {
             )}
 
             {/* Sidebar */}
-            <aside className={`fixed md:static inset-y-0 left-0 w-64 border-r border-slate-800 bg-[#151822] flex-col z-40 transform transition-transform duration-300 ease-in-out md:translate-x-0 flex ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <aside className={`fixed md:static inset-y-0 left-0 w-64 border-r border-slate-800 bg-bg-surface flex-col z-40 transform transition-transform duration-300 ease-in-out md:translate-x-0 flex ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div className="p-6 flex items-center justify-between">
                     <h1
                         onClick={() => {
                             navigate('/dashboard');
                             setIsMobileMenuOpen(false);
                         }}
-                        className="text-xl font-bold tracking-tight text-white flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+                        className="text-xl font-bold tracking-tight text-text-main flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
                     >
                         <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-amber-500 flex items-center justify-center shadow-lg">
-                            <Scale className="w-4 h-4 text-white" />
+                            <Scale className="w-4 h-4 text-text-main" />
                         </span>
                         Legal Portal
                     </h1>
                     <button
-                        className="md:hidden text-slate-400 hover:text-white"
+                        className="md:hidden text-slate-400 hover:text-text-main"
                         onClick={() => setIsMobileMenuOpen(false)}
                     >
                         <X className="w-6 h-6" />
@@ -89,7 +91,7 @@ const Layout = () => {
                             </div>
                         )}
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-white truncate">{profile?.full_name || 'Authorized User'}</p>
+                            <p className="text-sm font-semibold text-text-main truncate">{profile?.full_name || 'Authorized User'}</p>
                             <p className="text-xs text-slate-400 capitalize">{profile?.role}</p>
                         </div>
                     </button>
@@ -101,10 +103,10 @@ const Layout = () => {
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col overflow-hidden relative">
-                <header className="h-16 border-b border-slate-800 bg-[#0f111a]/80 backdrop-blur-md flex items-center px-4 md:px-8 justify-between z-10 w-full">
+                <header className="h-16 border-b border-border-default bg-bg-base/80 backdrop-blur-md flex items-center px-4 md:px-8 justify-between z-10 w-full">
                     <div className="flex items-center gap-3">
                         <button
-                            className="md:hidden p-2 -ml-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+                            className="md:hidden p-2 -ml-2 text-slate-400 hover:text-text-main rounded-lg hover:bg-slate-800 transition-colors"
                             onClick={() => setIsMobileMenuOpen(true)}
                         >
                             <Menu className="w-6 h-6" />
@@ -112,6 +114,14 @@ const Layout = () => {
                         <div className="font-medium text-sm text-slate-400 md:ml-0">Overview</div>
                     </div>
                     <div className="flex items-center gap-4">
+                        <button
+                            onClick={toggleTheme}
+                            className="p-2 text-text-muted hover:text-text-main hover:bg-bg-surface-hover rounded-full transition-colors"
+                            aria-label="Toggle Theme"
+                        >
+                            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                        </button>
+
                         {profile?.company_logo_url ? (
                             <img src={profile.company_logo_url} alt="Company Logo" className="h-8 max-w-[120px] object-contain" />
                         ) : profile?.company_name ? (

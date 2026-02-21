@@ -149,7 +149,7 @@ export default function EvidenceGallery() {
         <div className="max-w-6xl mx-auto pb-12">
             <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">Evidence Vault</h1>
+                    <h1 className="text-3xl font-bold text-text-main mb-2">Evidence Vault</h1>
                     <p className="text-slate-400">Secure repository of all documentation verifying the claims.</p>
                 </div>
                 {isLawyerOrAdmin && (
@@ -165,7 +165,7 @@ export default function EvidenceGallery() {
             {/* Upload Area */}
             {showUpload && isLawyerOrAdmin && (
                 <div className="glass-panel p-6 rounded-2xl mb-10 border border-blue-500/30">
-                    <h3 className="text-lg font-semibold text-white mb-6">Upload New Document to Vault</h3>
+                    <h3 className="text-lg font-semibold text-text-main mb-6">Upload New Document to Vault</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-4">
                             <DualLanguageInput
@@ -177,12 +177,12 @@ export default function EvidenceGallery() {
                             />
                             <div>
                                 <label className="text-sm font-medium text-slate-300 ml-1 block mb-1">Verification Code (If applicable)</label>
-                                <input type="text" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} placeholder="e.g. 109884831" className="w-full bg-[#151822]/80 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 placeholder:text-slate-600 focus:border-blue-500 outline-none" />
+                                <input type="text" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} placeholder="e.g. 109884831" className="w-full bg-bg-surface/80 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 placeholder:text-slate-600 focus:border-blue-500 outline-none" />
                             </div>
                         </div>
 
                         <div className="flex flex-col justify-end">
-                            <div className="border border-dashed border-slate-600 rounded-xl p-6 text-center bg-[#151822] hover:bg-slate-800/50 transition">
+                            <div className="border border-dashed border-slate-600 rounded-xl p-6 text-center bg-bg-surface hover:bg-slate-800/50 transition">
                                 <FileBadge className="w-8 h-8 text-slate-500 mx-auto mb-3" />
                                 <p className="text-sm text-slate-400 mb-4">Select the PDF file containing the evidence.</p>
                                 <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600/20 file:text-blue-400 hover:file:bg-blue-600/30 cursor-pointer" />
@@ -241,7 +241,7 @@ export default function EvidenceGallery() {
                                     </div>
                                 </div>
 
-                                <h4 className="text-lg font-bold text-white mb-2 leading-tight">
+                                <h4 className="text-lg font-bold text-text-main mb-2 leading-tight">
                                     {doc.title}
                                 </h4>
                                 <p className="text-xs text-slate-400 font-arabic mb-4 line-clamp-2" dir="rtl">{doc.arabic_translation}</p>
@@ -298,7 +298,7 @@ export default function EvidenceGallery() {
 
                                 {/* Evidence Integrity Banner */}
                                 {doc.verification_code && (
-                                    <div className="mt-auto bg-[#151822] p-3 rounded-xl border border-emerald-500/20 flex items-center justify-between mb-4 mt-4">
+                                    <div className="mt-auto bg-bg-surface p-3 rounded-xl border border-emerald-500/20 flex items-center justify-between mb-4 mt-4">
                                         <div className="flex items-center gap-2">
                                             <ShieldCheck className="w-4 h-4 text-emerald-500" />
                                             <span className="text-xs text-emerald-500 font-medium">Verified Gov Document</span>
@@ -314,7 +314,7 @@ export default function EvidenceGallery() {
                                                 e.stopPropagation();
                                                 handleViewDocument(doc.file_url!);
                                             }}
-                                            className="w-full py-2.5 bg-[#151822] hover:bg-slate-800 text-slate-200 justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-slate-800 hover:border-slate-700"
+                                            className="w-full py-2.5 bg-bg-surface hover:bg-slate-800 text-slate-200 justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-slate-800 hover:border-slate-700"
                                         >
                                             <ExternalLink className="w-4 h-4" /> View Original Document
                                         </button>
@@ -322,7 +322,7 @@ export default function EvidenceGallery() {
                                         <button
                                             disabled
                                             onClick={(e) => e.stopPropagation()}
-                                            className="w-full py-2.5 bg-[#151822]/50 text-slate-500 justify-center rounded-xl flex items-center gap-2 text-sm font-medium border border-slate-800/50 cursor-not-allowed"
+                                            className="w-full py-2.5 bg-bg-surface/50 text-slate-500 justify-center rounded-xl flex items-center gap-2 text-sm font-medium border border-slate-800/50 cursor-not-allowed"
                                         >
                                             <Lock className="w-4 h-4" /> Offline Evidence
                                         </button>
@@ -339,7 +339,7 @@ export default function EvidenceGallery() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm"
                     onClick={() => setSelectedEvidence(null)}>
                     <div
-                        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col bg-[#151822] rounded-2xl overflow-hidden shadow-2xl border border-slate-700"
+                        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col bg-bg-surface rounded-2xl overflow-hidden shadow-2xl border border-slate-700"
                         onClick={e => e.stopPropagation()}
                     >
                         <button
@@ -351,7 +351,7 @@ export default function EvidenceGallery() {
 
                         {/* Explanation Above Image */}
                         <div className="p-6 sm:p-8 bg-slate-900 border-b border-slate-800 shrink-0">
-                            <h3 className="text-xl font-bold text-white mb-3 pr-8">{selectedEvidence.title}</h3>
+                            <h3 className="text-xl font-bold text-text-main mb-3 pr-8">{selectedEvidence.title}</h3>
                             {(selectedEvidence.legal_significance_en || selectedEvidence.legal_significance_ar) ? (
                                 <div className="space-y-3">
                                     {selectedEvidence.legal_significance_en && (

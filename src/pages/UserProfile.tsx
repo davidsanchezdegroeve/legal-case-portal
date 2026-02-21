@@ -130,7 +130,7 @@ export default function UserProfile() {
     return (
         <div className="max-w-4xl mx-auto pb-12">
             <header className="mb-8">
-                <h1 className="text-3xl font-bold text-white mb-2">User Profile</h1>
+                <h1 className="text-3xl font-bold text-text-main mb-2">User Profile</h1>
                 <p className="text-slate-400">Manage your personal details, company branding, and security settings.</p>
             </header>
 
@@ -151,7 +151,7 @@ export default function UserProfile() {
                 {/* Left Column: Image Uploads */}
                 <div className="md:col-span-1 space-y-6">
                     <div className="glass-panel p-6 rounded-2xl border border-slate-800">
-                        <h3 className="text-lg font-semibold text-white mb-4">Profile Branding</h3>
+                        <h3 className="text-lg font-semibold text-text-main mb-4">Profile Branding</h3>
 
                         {/* Avatar Upload */}
                         <div className="mb-6 aspect-square w-full relative group cursor-pointer" onClick={() => avatarInputRef.current?.click()}>
@@ -162,8 +162,8 @@ export default function UserProfile() {
                                     <User className="w-16 h-16 text-slate-600" />
                                 )}
                                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <UploadCloud className="w-8 h-8 text-white mb-2" />
-                                    <span className="text-xs font-semibold text-white">Upload Avatar</span>
+                                    <UploadCloud className="w-8 h-8 text-text-main mb-2" />
+                                    <span className="text-xs font-semibold text-text-main">Upload Avatar</span>
                                 </div>
                             </div>
                             <input
@@ -187,8 +187,8 @@ export default function UserProfile() {
                                     </div>
                                 )}
                                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <UploadCloud className="w-6 h-6 text-white mb-1" />
-                                    <span className="text-[10px] font-semibold text-white uppercase tracking-wider">Upload Logo</span>
+                                    <UploadCloud className="w-6 h-6 text-text-main mb-1" />
+                                    <span className="text-[10px] font-semibold text-text-main uppercase tracking-wider">Upload Logo</span>
                                 </div>
                             </div>
                             <input
@@ -210,7 +210,7 @@ export default function UserProfile() {
                             <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
                                 <User className="w-5 h-5 text-blue-400" />
                             </div>
-                            <h2 className="text-xl font-bold text-white">Personal Information</h2>
+                            <h2 className="text-xl font-bold text-text-main">Personal Information</h2>
                         </div>
 
                         <form onSubmit={handleSaveProfile} className="space-y-5">
@@ -220,7 +220,7 @@ export default function UserProfile() {
                                     type="text"
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
-                                    className="w-full bg-[#151822] border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:border-blue-500 outline-none transition-colors"
+                                    className="w-full bg-bg-surface border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:border-blue-500 outline-none transition-colors"
                                     placeholder="Enter your full name"
                                 />
                             </div>
@@ -232,7 +232,7 @@ export default function UserProfile() {
                                         type="text"
                                         value={companyName}
                                         onChange={(e) => setCompanyName(e.target.value)}
-                                        className="w-full bg-[#151822] border border-slate-700 rounded-xl pl-12 pr-4 py-3 text-slate-100 placeholder:text-slate-600 focus:border-amber-500 outline-none transition-colors"
+                                        className="w-full bg-bg-surface border border-slate-700 rounded-xl pl-12 pr-4 py-3 text-slate-100 placeholder:text-slate-600 focus:border-amber-500 outline-none transition-colors"
                                         placeholder="Enter your company name"
                                     />
                                 </div>
@@ -256,7 +256,7 @@ export default function UserProfile() {
                             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                                 <Lock className="w-5 h-5 text-emerald-400" />
                             </div>
-                            <h2 className="text-xl font-bold text-white">Security & Password</h2>
+                            <h2 className="text-xl font-bold text-text-main">Security & Password</h2>
                         </div>
 
                         <form onSubmit={handleUpdatePassword} className="space-y-5">
@@ -267,7 +267,7 @@ export default function UserProfile() {
                                         type="password"
                                         value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
-                                        className="w-full bg-[#151822] border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 outline-none transition-colors"
+                                        className="w-full bg-bg-surface border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 outline-none transition-colors"
                                         placeholder="Must be at least 6 characters"
                                     />
                                 </div>
@@ -277,7 +277,7 @@ export default function UserProfile() {
                                         type="password"
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
-                                        className="w-full bg-[#151822] border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 outline-none transition-colors"
+                                        className="w-full bg-bg-surface border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 outline-none transition-colors"
                                         placeholder="Re-enter new password"
                                     />
                                 </div>

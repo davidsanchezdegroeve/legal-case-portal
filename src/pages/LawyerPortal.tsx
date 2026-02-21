@@ -114,7 +114,7 @@ export default function LawyerPortal() {
 
             <div className="w-1/3 flex flex-col gap-4">
                 <header className="mb-4">
-                    <h1 className="text-2xl font-bold text-white flex items-center gap-2"><Briefcase className="w-6 h-6 text-emerald-500" /> My Requests</h1>
+                    <h1 className="text-2xl font-bold text-text-main flex items-center gap-2"><Briefcase className="w-6 h-6 text-emerald-500" /> My Requests</h1>
                     <p className="text-slate-400 text-sm">Action items requiring legal counsel advice.</p>
                 </header>
 
@@ -148,20 +148,20 @@ export default function LawyerPortal() {
                         {requests.filter(r => r.id === activeRequest).map(req => (
                             <div key={req.id} className="h-full flex flex-col">
                                 <div className="mb-8">
-                                    <h2 className="text-2xl font-bold text-white mb-4">{req.title}</h2>
-                                    <div className="bg-[#151822]/80 p-5 rounded-xl border border-slate-800">
+                                    <h2 className="text-2xl font-bold text-text-main mb-4">{req.title}</h2>
+                                    <div className="bg-bg-surface/80 p-5 rounded-xl border border-slate-800">
                                         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Admin Request Context</h4>
                                         <p className="text-slate-300 leading-relaxed">{req.description}</p>
                                     </div>
                                 </div>
 
                                 <div className="flex-1 max-h-[500px]">
-                                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                                    <h3 className="text-lg font-semibold text-text-main mb-4 flex items-center gap-2">
                                         <PenTool className="w-5 h-5 text-amber-500" /> Counsel Recommendation
                                     </h3>
 
                                     {/* If they are an Admin, they should only view it maybe, or read-only. For now we assume a Lawyer is using this to type it. */}
-                                    <div className="bg-[#151822] p-6 rounded-2xl border border-slate-800">
+                                    <div className="bg-bg-surface p-6 rounded-2xl border border-slate-800">
                                         <DualLanguageInput
                                             label="Type your legal recommendation"
                                             value={recommendation}

@@ -53,7 +53,7 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#0f111a]">
+        <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-bg-base">
             {/* Background glow effects */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
             <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[100px] pointer-events-none"></div>
@@ -67,7 +67,7 @@ const Login = () => {
                         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#1a1d29] to-[#232736] border border-slate-700/50 flex items-center justify-center shadow-lg mb-6 shadow-black/50">
                             <Shield className="w-8 h-8 text-amber-400" />
                         </div>
-                        <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Legal Defense</h1>
+                        <h1 className="text-3xl font-bold tracking-tight text-text-main mb-2">Legal Defense</h1>
                         <p className="text-slate-400 text-sm font-medium">Secure Strategy & Evidence Portal</p>
                     </div>
 
@@ -99,7 +99,7 @@ const Login = () => {
                                                 type="email"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
-                                                className="w-full pl-11 pr-4 py-3 bg-[#151822]/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
+                                                className="w-full pl-11 pr-4 py-3 bg-bg-surface/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
                                                 placeholder="admin@legal.local"
                                                 required
                                             />
@@ -124,7 +124,7 @@ const Login = () => {
                                         setResetEmailSent(false);
                                         setError(null);
                                     }}
-                                    className="text-sm text-slate-400 hover:text-white transition-colors"
+                                    className="text-sm text-slate-400 hover:text-text-main transition-colors"
                                 >
                                     Cancel and return to login
                                 </button>
@@ -148,7 +148,7 @@ const Login = () => {
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="w-full pl-11 pr-4 py-3 bg-[#151822]/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
+                                        className="w-full pl-11 pr-4 py-3 bg-bg-surface/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
                                         placeholder="admin@legal.local"
                                         required
                                     />
@@ -174,7 +174,7 @@ const Login = () => {
                                         type="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full pl-11 pr-4 py-3 bg-[#151822]/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
+                                        className="w-full pl-11 pr-4 py-3 bg-bg-surface/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
                                         placeholder="••••••••"
                                         required
                                     />

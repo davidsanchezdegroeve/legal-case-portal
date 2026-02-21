@@ -70,7 +70,7 @@ export default function Dashboard() {
     return (
         <div className="max-w-6xl mx-auto pb-12">
             <header className="mb-8">
-                <h1 className="text-3xl font-bold text-white mb-2">Legal Strategy Overview</h1>
+                <h1 className="text-3xl font-bold text-text-main mb-2">Legal Strategy Overview</h1>
                 <p className="text-slate-400">High-level summary of the shareholder dispute case.</p>
             </header>
 
@@ -98,12 +98,12 @@ export default function Dashboard() {
                     <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
                     <div className="flex justify-between items-start mb-4 relative z-10">
                         <h3 className="text-slate-400 font-medium tracking-wide text-sm uppercase">Total Calculated Debt</h3>
-                        <div className="p-2 bg-[#151822] rounded-lg border border-slate-800">
+                        <div className="p-2 bg-bg-surface rounded-lg border border-slate-800">
                             <TrendingUp className="w-5 h-5 text-amber-500" />
                         </div>
                     </div>
                     <div className="relative z-10">
-                        <div className="text-4xl font-bold text-white mb-1">
+                        <div className="text-4xl font-bold text-text-main mb-1">
                             {formatCurrency(totalDebt)}
                         </div>
                         <p className="text-xs text-slate-500">Includes all GOSI salary gaps & accrued rates</p>
@@ -114,12 +114,12 @@ export default function Dashboard() {
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
                     <div className="flex justify-between items-start mb-4 relative z-10">
                         <h3 className="text-slate-400 font-medium tracking-wide text-sm uppercase">Verified Evidence</h3>
-                        <div className="p-2 bg-[#151822] rounded-lg border border-slate-800">
+                        <div className="p-2 bg-bg-surface rounded-lg border border-slate-800">
                             <ShieldCheck className="w-5 h-5 text-blue-400" />
                         </div>
                     </div>
                     <div className="relative z-10">
-                        <div className="text-4xl font-bold text-white mb-1">{evidenceCount}</div>
+                        <div className="text-4xl font-bold text-text-main mb-1">{evidenceCount}</div>
                         <p className="text-xs text-slate-500">Government & Official Documents in Vault</p>
                     </div>
                 </div>
@@ -128,7 +128,7 @@ export default function Dashboard() {
                     <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
                     <div className="flex justify-between items-start mb-4 relative z-10">
                         <h3 className="text-slate-400 font-medium tracking-wide text-sm uppercase">Legal Risk Level</h3>
-                        <div className="p-2 bg-[#151822] rounded-lg border border-slate-800">
+                        <div className="p-2 bg-bg-surface rounded-lg border border-slate-800">
                             <Scale className="w-5 h-5 text-emerald-400" />
                         </div>
                     </div>
