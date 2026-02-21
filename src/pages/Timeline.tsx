@@ -19,6 +19,7 @@ export default function Timeline() {
     const isAdmin = profile?.role === 'admin';
     const [events, setEvents] = useState<TimelineEvent[]>([]);
     const [showAdd, setShowAdd] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     // New event state
     const [title, setTitle] = useState('');
@@ -27,31 +28,27 @@ export default function Timeline() {
     const [isBadFaith, setIsBadFaith] = useState(false);
 
     useEffect(() => {
-        // For MVP, we use mock hardcoded initial state combining with Supabase fetch later.
-        setEvents([
-            {
-                id: '2',
-                timestamp: new Date().toISOString(),
-                event_title: 'Current Date - Legal Hold',
-                description: 'Waiting for shareholder response to initial litigation letter.',
-                is_bad_faith_indicator: false,
-                arabic_translation: 'في انتظار رد المساهم على خطاب التقاضي الأولي.'
-            },
-            {
-                id: '1',
-                timestamp: '2024-02-12T00:00:00Z',
-                event_title: 'Feb 12th Secret Dissolution',
-                description: 'Opposing partner covertly initiated company dissolution without notifying the board.',
-                is_bad_faith_indicator: true,
-                arabic_translation: 'شرع الشريك المعارض سراً في حل الشركة دون إخطار مجلس الإدارة.'
+        async function fetchTimeline() {
+            try {
+                const { data, error } = await supabase
+                    .from('timeline_events')
+                    .select('*')
+                    .order('timestamp', { ascending: false });
+
+                if (error) throw error;
+                if (data) setEvents(data as TimelineEvent[]);
+            } catch (err) {
+                console.error("Error fetching timeline:", err);
+            } finally {
+                setIsLoading(false);
             }
-        ]);
+        }
+        fetchTimeline();
     }, []);
 
     const handleAddSubmit = async () => {
         if (!title || !desc) return;
-        const newEvent: TimelineEvent = {
-            id: Math.random().toString(),
+        const newEvent = {
             timestamp: new Date().toISOString(),
             event_title: title,
             description: desc,
@@ -60,23 +57,34 @@ export default function Timeline() {
         };
 
         try {
-            await supabase.from('timeline_events').insert([
-                {
-                    timestamp: newEvent.timestamp,
-                    event_title: newEvent.event_title,
-                    description: newEvent.description,
-                    arabic_translation: newEvent.arabic_translation,
-                    is_bad_faith_indicator: newEvent.is_bad_faith_indicator
-                }
-            ]);
-            // Even if DB fails in mock mode, add to UI
-        } catch (e) {
+            const { data, error } = await supabase
+                .from('timeline_events')
+                .insert([newEvent])
+                .select()
+                .single();
+
+            if (error) throw error;
+            const typedData = data as TimelineEvent;
+            if (typedData) setEvents([typedData, ...events]);
+
+            setShowAdd(false);
+            setTitle(''); setDesc(''); setDescArabic(''); setIsBadFaith(false);
+        } catch (e: any) {
             console.error(e);
+            alert("Failed to add incident: " + e.message);
         }
-        setEvents([newEvent, ...events]);
-        setShowAdd(false);
-        setTitle(''); setDesc(''); setDescArabic(''); setIsBadFaith(false);
     };
+
+    if (isLoading) {
+        return (
+            <div className="max-w-4xl mx-auto pb-12 flex items-center justify-center min-h-[50vh]">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-slate-400 font-medium tracking-wide">Loading timeline records...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto pb-12">
@@ -132,50 +140,56 @@ export default function Timeline() {
             )}
 
             {/* Timeline Render */}
-            <div className="relative pl-8 sm:pl-32 py-6 space-y-12 before:absolute before:inset-0 before:ml-12 sm:before:ml-[7.5rem] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
-
-                {events.map((event) => (
-                    <div key={event.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                        {/* Timeline Marker */}
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#0f111a] bg-[#1a1d29] shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 absolute left-2 sm:left-[6.2rem] md:left-1/2 -translate-x-1/2 transition-transform duration-300 group-hover:scale-110 z-10">
-                            {event.is_bad_faith_indicator ? (
-                                <div className="w-full h-full bg-red-500/20 rounded-full flex items-center justify-center border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.5)]">
-                                    <AlertOctagon className="w-4 h-4 text-red-400" />
-                                </div>
-                            ) : (
-                                <div className="w-full h-full bg-blue-500/10 rounded-full flex items-center justify-center border border-slate-600">
-                                    <CircleDot className="w-4 h-4 text-blue-400" />
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Content Box */}
-                        <div className="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] glass-panel p-5 rounded-2xl relative shadow-lg transition-transform duration-300 group-hover:-translate-y-1">
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                                    {new Date(event.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                </div>
-                                {event.is_bad_faith_indicator && (
-                                    <span className="text-[10px] font-bold bg-red-500/20 text-red-400 px-2 py-1 rounded-full uppercase tracking-wider border border-red-500/30">
-                                        Bad Faith
-                                    </span>
+            {events.length === 0 ? (
+                <div className="text-center py-20 glass-panel rounded-3xl border border-slate-800/50">
+                    <CircleDot className="w-12 h-12 text-slate-600 mx-auto mb-4 opacity-50" />
+                    <h3 className="text-lg font-medium text-slate-300">No events found</h3>
+                    <p className="text-slate-500 text-sm mt-2">The timeline ledger is currently empty.</p>
+                </div>
+            ) : (
+                <div className="relative pl-8 sm:pl-32 py-6 space-y-12 before:absolute before:inset-0 before:ml-12 sm:before:ml-[7.5rem] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
+                    {events.map((event) => (
+                        <div key={event.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                            {/* Timeline Marker */}
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#0f111a] bg-[#1a1d29] shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 absolute left-2 sm:left-[6.2rem] md:left-1/2 -translate-x-1/2 transition-transform duration-300 group-hover:scale-110 z-10">
+                                {event.is_bad_faith_indicator ? (
+                                    <div className="w-full h-full bg-red-500/20 rounded-full flex items-center justify-center border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.5)]">
+                                        <AlertOctagon className="w-4 h-4 text-red-400" />
+                                    </div>
+                                ) : (
+                                    <div className="w-full h-full bg-blue-500/10 rounded-full flex items-center justify-center border border-slate-600">
+                                        <CircleDot className="w-4 h-4 text-blue-400" />
+                                    </div>
                                 )}
                             </div>
 
-                            <h4 className={`text-lg font-bold mb-3 ${event.is_bad_faith_indicator ? 'text-red-300' : 'text-slate-100'}`}>
-                                {event.event_title}
-                            </h4>
+                            {/* Content Box */}
+                            <div className="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] glass-panel p-5 rounded-2xl relative shadow-lg transition-transform duration-300 group-hover:-translate-y-1">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                                        {new Date(event.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    </div>
+                                    {event.is_bad_faith_indicator && (
+                                        <span className="text-[10px] font-bold bg-red-500/20 text-red-400 px-2 py-1 rounded-full uppercase tracking-wider border border-red-500/30">
+                                            Bad Faith
+                                        </span>
+                                    )}
+                                </div>
 
-                            <TranslatedText
-                                original={event.description}
-                                translated={event.arabic_translation}
-                                className="text-sm border-t border-slate-800/50 pt-3"
-                            />
+                                <h4 className={`text-lg font-bold mb-3 ${event.is_bad_faith_indicator ? 'text-red-300' : 'text-slate-100'}`}>
+                                    {event.event_title}
+                                </h4>
+
+                                <TranslatedText
+                                    original={event.description}
+                                    translated={event.arabic_translation}
+                                    className="text-sm border-t border-slate-800/50 pt-3"
+                                />
+                            </div>
                         </div>
-                    </div>
-                ))}
-
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

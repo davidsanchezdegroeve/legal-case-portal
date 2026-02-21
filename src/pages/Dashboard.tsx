@@ -5,27 +5,44 @@ import { TrendingUp, AlertTriangle, ShieldCheck, Scale, FileText } from 'lucide-
 import { TranslatedText } from '../components/ui/TranslatedText';
 
 export default function Dashboard() {
-
     const [totalDebt, setTotalDebt] = useState<number>(0);
     const [unpaidWeeks, setUnpaidWeeks] = useState<number>(0);
+    const [evidenceCount, setEvidenceCount] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function loadDashboardData() {
-            // Fetch financial claims to calculate total debt
-            const { data: claims, error } = await supabase
-                .from('financial_claims')
-                .select('*');
+            try {
+                // Fetch financial claims to calculate total debt
+                const { data: claims, error: claimsError } = await supabase
+                    .from('financial_claims')
+                    .select('*');
 
-            if (!error && claims) {
-                const total = claims.reduce((sum, current) => sum + (current.calculated_debt || 0), 0);
-                setTotalDebt(total || 1010000); // the prompt mock example: 1.01M SAR
+                if (claimsError) throw claimsError;
 
-                // Check for economic duress markers
-                const unpaid = claims.filter(c => c.status === 'Not Received' && c.item.includes('Weekly Payment')).length;
-                setUnpaidWeeks(unpaid || 3); // mock if empty
+                if (claims) {
+                    const total = claims.reduce((sum, current) => sum + (current.calculated_debt || 0), 0);
+                    setTotalDebt(total);
+
+                    // Check for economic duress markers
+                    const unpaid = claims.filter(c => c.status === 'Not Received' && c.item.includes('Weekly Payment')).length;
+                    setUnpaidWeeks(unpaid);
+                }
+
+                // Fetch evidence block count
+                const { count, error: evidenceError } = await supabase
+                    .from('evidence_vault')
+                    .select('*', { count: 'exact', head: true });
+
+                if (evidenceError) throw evidenceError;
+
+                if (count !== null) setEvidenceCount(count);
+
+            } catch (err) {
+                console.error("Dashboard fetching error: ", err);
+            } finally {
+                setIsLoading(false);
             }
-            setIsLoading(false);
         }
         loadDashboardData();
     }, []);
@@ -38,6 +55,17 @@ export default function Dashboard() {
             notation: 'compact',
         }).format(amount);
     };
+
+    if (isLoading) {
+        return (
+            <div className="max-w-6xl mx-auto pb-12 flex items-center justify-center min-h-[50vh]">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-slate-400 font-medium tracking-wide">Retrieving latest case data...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-6xl mx-auto pb-12">
@@ -76,7 +104,7 @@ export default function Dashboard() {
                     </div>
                     <div className="relative z-10">
                         <div className="text-4xl font-bold text-white mb-1">
-                            {isLoading ? '...' : formatCurrency(totalDebt)}
+                            {formatCurrency(totalDebt)}
                         </div>
                         <p className="text-xs text-slate-500">Includes all GOSI salary gaps & accrued rates</p>
                     </div>
@@ -91,8 +119,8 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="relative z-10">
-                        <div className="text-4xl font-bold text-white mb-1">12</div>
-                        <p className="text-xs text-slate-500">Government & Official Documents</p>
+                        <div className="text-4xl font-bold text-white mb-1">{evidenceCount}</div>
+                        <p className="text-xs text-slate-500">Government & Official Documents in Vault</p>
                     </div>
                 </div>
 

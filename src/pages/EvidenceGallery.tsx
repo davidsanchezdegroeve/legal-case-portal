@@ -1,16 +1,31 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { UploadCloud, FileText, ExternalLink, ShieldCheck, FileBadge } from 'lucide-react';
+import { UploadCloud, FileText, ExternalLink, ShieldCheck, FileBadge, TrendingUp, MessageSquare, Lock, Folders } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 
+export interface EvidenceDoc {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    file_url: string | null;
+    created_at: string;
+    uploaded_by: string;
+    verification_code?: string;
+    arabic_translation?: string;
+}
+
 export default function EvidenceGallery() {
+    const [documents, setDocuments] = useState<EvidenceDoc[]>([]);
+    const [filter, setFilter] = useState('all');
+    const [showUpload, setShowUpload] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
     const { profile } = useAuth();
-    const isAdmin = profile?.role === 'admin';
-    const [documents, setDocuments] = useState<any[]>([]);
+    const isLawyerOrAdmin = profile?.role === 'lawyer' || profile?.role === 'admin';
 
     // Upload State
-    const [showUpload, setShowUpload] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [title, setTitle] = useState('');
     const [titleAr, setTitleAr] = useState('');
@@ -18,17 +33,22 @@ export default function EvidenceGallery() {
     const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
-        // Initial mock data as requested: "like my GOSI Certificate and display their Certificate Code"
-        setDocuments([
-            {
-                id: '1',
-                title: 'GOSI Salary Gap Certificate',
-                category: 'Financial',
-                verification_code: '109884831',
-                arabic_translation: 'شهادة فجوة الراتب التابعة للتأمينات الاجتماعية',
-                file_url: 'mock_url'
+        async function fetchEvidence() {
+            try {
+                const { data, error } = await supabase
+                    .from('evidence_vault')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                if (data) setDocuments(data as unknown as EvidenceDoc[]);
+            } catch (err) {
+                console.error("Error fetching evidence:", err);
+            } finally {
+                setIsLoading(false);
             }
-        ]);
+        }
+        fetchEvidence();
     }, []);
 
     const handleUpload = async () => {
@@ -48,7 +68,7 @@ export default function EvidenceGallery() {
             if (uploadError) throw uploadError;
 
             // 2. Insert DB Record
-            await supabase.from('evidence_vault').insert([
+            const { data, error: dbError } = await supabase.from('evidence_vault').insert([
                 {
                     title,
                     category: 'General',
@@ -56,17 +76,13 @@ export default function EvidenceGallery() {
                     verification_code: verificationCode,
                     arabic_translation: titleAr || undefined,
                 }
-            ]);
+            ]).select().single();
 
-            // Mock local addition
-            setDocuments([{
-                id: Math.random().toString(),
-                title,
-                category: 'General',
-                verification_code: verificationCode,
-                arabic_translation: titleAr,
-                file_url: filePath
-            }, ...documents]);
+            if (dbError) throw dbError;
+
+            if (data) {
+                setDocuments([data as unknown as EvidenceDoc, ...documents]);
+            }
 
             setShowUpload(false);
             setFile(null); setTitle(''); setTitleAr(''); setVerificationCode('');
@@ -79,40 +95,39 @@ export default function EvidenceGallery() {
         }
     };
 
-    const retrieveSignedUrl = async (path: string) => {
-        try {
-            if (path === 'mock_url') return alert('This is a mock document. Signed URLs require a real storage upload.');
 
-            const { data, error } = await supabase.storage
-                .from('evidence-vault')
-                .createSignedUrl(path, 60); // 60 seconds strict expiration
+    const filteredDocs = documents.filter(doc => filter === 'all' || doc.category === filter);
 
-            if (error) throw error;
-            window.open(data.signedUrl, '_blank');
-        } catch (err: any) {
-            console.error(err);
-            alert('Access Denied: ' + err.message);
-        }
-    };
+    if (isLoading) {
+        return (
+            <div className="max-w-6xl mx-auto pb-12 flex items-center justify-center min-h-[50vh]">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-slate-400 font-medium tracking-wide">Decrypting vault contents...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-6xl mx-auto pb-12">
-            <header className="mb-10 flex justify-between items-end">
+            <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-white mb-2">Evidence Vault</h1>
-                    <p className="text-slate-400">Secure repository for verified government & legal documents.</p>
+                    <p className="text-slate-400">Secure repository of all documentation verifying the claims.</p>
                 </div>
-                {isAdmin && (
+                {isLawyerOrAdmin && (
                     <button
                         onClick={() => setShowUpload(!showUpload)}
-                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-blue-900/20"
+                        className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-blue-900/20 w-full md:w-auto font-medium"
                     >
-                        {showUpload ? 'Cancel' : <><UploadCloud className="w-5 h-5" /> Upload Evidence</>}
+                        {showUpload ? 'Cancel Upload' : <><UploadCloud className="w-5 h-5" /> Upload Evidence</>}
                     </button>
                 )}
             </header>
 
-            {showUpload && isAdmin && (
+            {/* Upload Area */}
+            {showUpload && isLawyerOrAdmin && (
                 <div className="glass-panel p-6 rounded-2xl mb-10 border border-blue-500/30">
                     <h3 className="text-lg font-semibold text-white mb-6">Upload New Document to Vault</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -146,41 +161,79 @@ export default function EvidenceGallery() {
                 </div>
             )}
 
-            {/* Vault Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {documents.map((doc) => (
-                    <div key={doc.id} className="glass-panel p-5 rounded-2xl flex flex-col h-full group">
-                        <div className="flex items-start justify-between mb-4">
-                            <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                                <FileText className="w-6 h-6" />
-                            </div>
-                            <div className="text-[10px] font-bold bg-slate-800 text-slate-400 px-2 py-1 rounded uppercase tracking-wider">
-                                {doc.category}
-                            </div>
-                        </div>
-
-                        <h4 className="text-lg font-bold text-white mb-2 leading-tight">
-                            {doc.title}
-                        </h4>
-                        <p className="text-xs text-slate-400 font-arabic mb-4" dir="rtl">{doc.arabic_translation}</p>
-
-                        {/* Evidence Integrity Banner */}
-                        {doc.verification_code && (
-                            <div className="mt-auto bg-[#151822] p-3 rounded-xl border border-emerald-500/20 flex items-center justify-between mb-4 mt-4">
-                                <div className="flex items-center gap-2">
-                                    <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                                    <span className="text-xs text-emerald-500 font-medium">Verified Gov Document</span>
-                                </div>
-                                <span className="text-xs text-slate-500 font-mono">CODE: {doc.verification_code}</span>
-                            </div>
-                        )}
-
-                        <button onClick={() => retrieveSignedUrl(doc.file_url)} className="mt-auto w-full py-2.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-200 justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-slate-700 hover:border-slate-500">
-                            <ExternalLink className="w-4 h-4" /> Request Signed URL (60s Expiration)
-                        </button>
-                    </div>
+            {/* Filters */}
+            <div className="flex overflow-x-auto pb-4 mb-6 gap-2 no-scrollbar">
+                {['all', 'Communication', 'Financial', 'Government', 'Audio'].map(cat => (
+                    <button
+                        key={cat}
+                        onClick={() => setFilter(cat)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${filter === cat ? 'bg-blue-600/20 text-blue-400 border border-blue-500/50' : 'bg-[#151822] text-slate-400 border border-slate-800 hover:border-slate-700'}`}
+                    >
+                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                    </button>
                 ))}
             </div>
+
+            {/* Grid */}
+            {filteredDocs.length === 0 ? (
+                <div className="text-center py-20 glass-panel rounded-3xl border border-slate-800/50">
+                    <Folders className="w-12 h-12 text-slate-600 mx-auto mb-4 opacity-50" />
+                    <h3 className="text-lg font-medium text-slate-300">Vault is empty</h3>
+                    <p className="text-slate-500 text-sm mt-2">No evidence documents have been securely uploaded yet.</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredDocs.map((doc) => (
+                        <div key={doc.id} className="glass-panel p-5 rounded-2xl flex flex-col h-full group border border-slate-800 hover:border-slate-700 transition">
+                            <div className="flex items-start justify-between mb-4">
+                                <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                                    {doc.category === 'Communication' && <MessageSquare className="w-6 h-6 text-blue-400" />}
+                                    {doc.category === 'Financial' && <TrendingUp className="w-6 h-6 text-amber-400" />}
+                                    {doc.category === 'Government' && <FileText className="w-6 h-6 text-emerald-400" />}
+                                    {doc.category === 'Audio' && <UploadCloud className="w-6 h-6 text-purple-400" />}
+                                    {!['Communication', 'Financial', 'Government', 'Audio'].includes(doc.category) && <FileText className="w-6 h-6 text-blue-400" />}
+                                </div>
+                                <div className="text-[10px] font-bold bg-slate-800 text-slate-400 px-2 py-1 rounded uppercase tracking-wider">
+                                    {doc.category}
+                                </div>
+                            </div>
+
+                            <h4 className="text-lg font-bold text-white mb-2 leading-tight">
+                                {doc.title}
+                            </h4>
+                            <p className="text-xs text-slate-400 font-arabic mb-4 line-clamp-2" dir="rtl">{doc.arabic_translation}</p>
+
+                            {/* Evidence Integrity Banner */}
+                            {doc.verification_code && (
+                                <div className="mt-auto bg-[#151822] p-3 rounded-xl border border-emerald-500/20 flex items-center justify-between mb-4 mt-4">
+                                    <div className="flex items-center gap-2">
+                                        <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                                        <span className="text-xs text-emerald-500 font-medium">Verified Gov Document</span>
+                                    </div>
+                                    <span className="text-xs text-slate-500 font-mono">CODE: {doc.verification_code}</span>
+                                </div>
+                            )}
+
+                            <div className="mt-auto pt-4">
+                                {doc.file_url ? (
+                                    <a
+                                        href={doc.file_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full py-2.5 bg-[#151822] hover:bg-slate-800 text-slate-200 justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-slate-800 hover:border-slate-700"
+                                    >
+                                        <ExternalLink className="w-4 h-4" /> View Original Document
+                                    </a>
+                                ) : (
+                                    <button disabled className="w-full py-2.5 bg-[#151822]/50 text-slate-500 justify-center rounded-xl flex items-center gap-2 text-sm font-medium border border-slate-800/50 cursor-not-allowed">
+                                        <Lock className="w-4 h-4" /> Offline Evidence
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
