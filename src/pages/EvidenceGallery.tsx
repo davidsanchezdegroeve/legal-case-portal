@@ -87,9 +87,10 @@ export default function EvidenceGallery() {
             setShowUpload(false);
             setFile(null); setTitle(''); setTitleAr(''); setVerificationCode('');
 
-        } catch (e: any) {
-            console.error('Upload Error:', e.message);
-            alert('Upload failed: ' + e.message);
+        } catch (e: unknown) {
+            const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
+            console.error('Upload Error:', errorMessage);
+            alert('Upload failed: ' + errorMessage);
         } finally {
             setIsUploading(false);
         }

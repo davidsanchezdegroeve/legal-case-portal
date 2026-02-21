@@ -69,9 +69,10 @@ export default function Timeline() {
 
             setShowAdd(false);
             setTitle(''); setDesc(''); setDescArabic(''); setIsBadFaith(false);
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.error(e);
-            alert("Failed to add incident: " + e.message);
+            const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
+            alert("Failed to add incident: " + errorMessage);
         }
     };
 
