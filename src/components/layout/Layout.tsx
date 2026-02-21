@@ -33,7 +33,13 @@ const Layout = () => {
             {/* Sidebar */}
             <aside className={`fixed md:static inset-y-0 left-0 w-64 border-r border-slate-800 bg-[#151822] flex-col z-40 transform transition-transform duration-300 ease-in-out md:translate-x-0 flex ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div className="p-6 flex items-center justify-between">
-                    <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-3">
+                    <h1
+                        onClick={() => {
+                            navigate('/dashboard');
+                            setIsMobileMenuOpen(false);
+                        }}
+                        className="text-xl font-bold tracking-tight text-white flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+                    >
                         <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-amber-500 flex items-center justify-center shadow-lg">
                             <Scale className="w-4 h-4 text-white" />
                         </span>
