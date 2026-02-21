@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { UploadCloud, FileText, ExternalLink, ShieldCheck, Search, FileBadge } from 'lucide-react';
+import { UploadCloud, FileText, ExternalLink, ShieldCheck, FileBadge } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 
 export default function EvidenceGallery() {

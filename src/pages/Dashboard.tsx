@@ -1,18 +1,11 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
-import { AlertCircle, TrendingUp, AlertTriangle, ShieldCheck, Scale, FileText } from 'lucide-react';
+
+import { TrendingUp, AlertTriangle, ShieldCheck, Scale, FileText } from 'lucide-react';
 import { TranslatedText } from '../components/ui/TranslatedText';
 
-interface Claim {
-    id: string;
-    item: string;
-    calculated_debt: number;
-    status: string;
-}
-
 export default function Dashboard() {
-    const { profile } = useAuth();
+
     const [totalDebt, setTotalDebt] = useState<number>(0);
     const [unpaidWeeks, setUnpaidWeeks] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(true);

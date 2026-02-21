@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
+
+
 import { Scale, Briefcase, ChevronRight, PenTool } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 
 export default function LawyerPortal() {
-    const { profile } = useAuth();
-    const isLawyer = profile?.role === 'lawyer';
 
     const [requests, setRequests] = useState<any[]>([]);
     const [activeRequest, setActiveRequest] = useState<string | null>(null);
@@ -60,8 +58,8 @@ export default function LawyerPortal() {
                             key={req.id}
                             onClick={() => { setActiveRequest(req.id); setRecommendation(req.recommendation); }}
                             className={`w-full text-left p-5 rounded-2xl border transition-all ${activeRequest === req.id
-                                    ? 'bg-blue-600/10 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.15)] glow'
-                                    : 'glass-panel border-slate-700 hover:border-slate-500'
+                                ? 'bg-blue-600/10 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.15)] glow'
+                                : 'glass-panel border-slate-700 hover:border-slate-500'
                                 }`}
                         >
                             <div className="flex items-center justify-between mb-2">

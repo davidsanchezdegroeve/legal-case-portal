@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Plus, AlertOctagon, FileCheck, CircleDot, FileEdit } from 'lucide-react';
+import { Plus, AlertOctagon, CircleDot, FileEdit } from 'lucide-react';
 import { TranslatedText } from '../components/ui/TranslatedText';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 
@@ -134,7 +134,7 @@ export default function Timeline() {
             {/* Timeline Render */}
             <div className="relative pl-8 sm:pl-32 py-6 space-y-12 before:absolute before:inset-0 before:ml-12 sm:before:ml-[7.5rem] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
 
-                {events.map((event, idx) => (
+                {events.map((event) => (
                     <div key={event.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                         {/* Timeline Marker */}
                         <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#0f111a] bg-[#1a1d29] shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 absolute left-2 sm:left-[6.2rem] md:left-1/2 -translate-x-1/2 transition-transform duration-300 group-hover:scale-110 z-10">
