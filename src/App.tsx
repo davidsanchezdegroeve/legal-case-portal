@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Timeline from './pages/Timeline';
 import EvidenceGallery from './pages/EvidenceGallery';
 import LawyerPortal from './pages/LawyerPortal';
+import UpdatePassword from './pages/UpdatePassword';
 
 import ProtectedRoute from './components/layout/ProtectedRoute';
 
@@ -12,6 +13,7 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/update-password" element={<UpdatePassword />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

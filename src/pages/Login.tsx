@@ -8,6 +8,8 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isResetMode, setIsResetMode] = useState(false);
+    const [resetEmailSent, setResetEmailSent] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -25,6 +27,24 @@ const Login = () => {
             navigate('/');
         } catch (err: any) {
             setError(err.message || 'Failed to sign in. Please check your credentials.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResetPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/update-password`,
+            });
+            if (error) throw error;
+            setResetEmailSent(true);
+        } catch (err: any) {
+            setError(err.message || 'Failed to send reset email.');
         } finally {
             setIsLoading(false);
         }
@@ -49,59 +69,129 @@ const Login = () => {
                         <p className="text-slate-400 text-sm font-medium">Secure Strategy & Evidence Portal</p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-5">
-                        {error && (
-                            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-sm text-red-400 flex items-center">
-                                <span>{error}</span>
-                            </div>
-                        )}
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300 block ml-1">Email Address</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-slate-500" />
+                    {isResetMode ? (
+                        <form onSubmit={handleResetPassword} className="space-y-5">
+                            {error && (
+                                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-sm text-red-400 flex items-center">
+                                    <span>{error}</span>
                                 </div>
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full pl-11 pr-4 py-3 bg-[#151822]/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
-                                    placeholder="admin@legal.local"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300 block ml-1">Password</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-slate-500" />
-                                </div>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-11 pr-4 py-3 bg-[#151822]/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
-                                    placeholder="••••••••"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-blue-900/40 mt-4 flex items-center justify-center gap-2 group border border-blue-500/50"
-                        >
-                            {isLoading ? (
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                            ) : (
-                                <>Sign into Portal <Shield className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" /></>
                             )}
-                        </button>
-                    </form>
+
+                            {resetEmailSent ? (
+                                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-sm text-emerald-400 text-center space-y-3">
+                                    <p>Reset link sent to <strong>{email}</strong>.</p>
+                                    <p>Please check your inbox (and spam folder) to set a new password.</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="text-slate-300 text-sm text-center mb-2">
+                                        Enter your email address and we'll send you a link to reset your password.
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-slate-300 block ml-1">Email Address</label>
+                                        <div className="relative">
+                                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                <Mail className="h-5 w-5 text-slate-500" />
+                                            </div>
+                                            <input
+                                                type="email"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                className="w-full pl-11 pr-4 py-3 bg-[#151822]/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
+                                                placeholder="admin@legal.local"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        disabled={isLoading || !email}
+                                        className="w-full bg-amber-600 hover:bg-amber-500 text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-amber-900/40 mt-4 flex items-center justify-center gap-2 border border-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Send Reset Link'}
+                                    </button>
+                                </>
+                            )}
+
+                            <div className="text-center mt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsResetMode(false);
+                                        setResetEmailSent(false);
+                                        setError(null);
+                                    }}
+                                    className="text-sm text-slate-400 hover:text-white transition-colors"
+                                >
+                                    Cancel and return to login
+                                </button>
+                            </div>
+                        </form>
+                    ) : (
+                        <form onSubmit={handleLogin} className="space-y-5">
+                            {error && (
+                                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-sm text-red-400 flex items-center">
+                                    <span>{error}</span>
+                                </div>
+                            )}
+
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-slate-300 block ml-1">Email Address</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <Mail className="h-5 w-5 text-slate-500" />
+                                    </div>
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full pl-11 pr-4 py-3 bg-[#151822]/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
+                                        placeholder="admin@legal.local"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between ml-1">
+                                    <label className="text-sm font-medium text-slate-300 block">Password</label>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsResetMode(true)}
+                                        className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                                    >
+                                        Forgot Password?
+                                    </button>
+                                </div>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <Lock className="h-5 w-5 text-slate-500" />
+                                    </div>
+                                    <input
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="w-full pl-11 pr-4 py-3 bg-[#151822]/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
+                                        placeholder="••••••••"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-blue-900/40 mt-4 flex items-center justify-center gap-2 group border border-blue-500/50"
+                            >
+                                {isLoading ? (
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                ) : (
+                                    <>Sign into Portal <Shield className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" /></>
+                                )}
+                            </button>
+                        </form>
+                    )}
 
                     <div className="mt-8 pt-6 border-t border-slate-800/50 text-center">
                         <p className="text-xs text-slate-500">
