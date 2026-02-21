@@ -1,46 +1,75 @@
 import { useState, useEffect } from 'react';
-
-
+import { supabase } from '../lib/supabase';
 import { Scale, Briefcase, ChevronRight, PenTool } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 
+interface LegalRequest {
+    id: string;
+    title: string;
+    description: string;
+    status: 'pending' | 'replied';
+    recommendation: string;
+    arabic_translation: string;
+}
+
 export default function LawyerPortal() {
 
-    const [requests, setRequests] = useState<any[]>([]);
+    const [requests, setRequests] = useState<LegalRequest[]>([]);
     const [activeRequest, setActiveRequest] = useState<string | null>(null);
     const [recommendation, setRecommendation] = useState('');
     const [recommendationAr, setRecommendationAr] = useState('');
 
     useEffect(() => {
-        // Basic mock initialization map
-        setRequests([
-            {
-                id: 'req_1',
-                title: 'Strategy against "Feb 12th" covert dissolution',
-                description: 'Need urgent advice on the legality of dissolving the entity behind my back while locking me out of my emails.',
-                status: 'pending',
-                recommendation: '',
-                arabic_translation: ''
-            },
-            {
-                id: 'req_2',
-                title: 'Review of GOSI Salary Gaps',
-                description: 'Please review the gap in my GOSI and compare against the company bank transfers to establish calculated debt.',
-                status: 'replied',
-                recommendation: 'Based on Saudi labor law, the employer is liable for the full stated salary in the GOSI register regardless of private verbal agreements.',
-                arabic_translation: 'بناءً على قانون العمل السعودي، يتحمل صاحب العمل المسؤولية...'
+        async function fetchRequests() {
+            try {
+                const { data, error } = await supabase
+                    .from('legal_dashboard')
+                    .select('*')
+                    .order('updated_at', { ascending: false });
+
+                if (error) throw error;
+                if (data) {
+                    const mappedRequests = data.map(row => ({
+                        id: row.id,
+                        title: row.my_requests ? (row.my_requests.length > 60 ? row.my_requests.substring(0, 60) + '...' : row.my_requests) : 'Legal Request',
+                        description: row.my_requests || 'No description provided.',
+                        status: row.lawyer_recommendations ? 'replied' : 'pending',
+                        recommendation: row.lawyer_recommendations || '',
+                        arabic_translation: row.arabic_translation || ''
+                    }));
+                    setRequests(mappedRequests);
+                }
+            } catch (err) {
+                console.error("Error fetching legal requests:", err);
             }
-        ]);
+        }
+        fetchRequests();
     }, []);
 
     const handleSaveRecommendation = async (reqId: string) => {
-        // Real implementation would save to DB legal_dashboard table
-        setRequests(reqs => reqs.map(r =>
-            r.id === reqId ? { ...r, recommendation, arabic_translation: recommendationAr, status: 'replied' } : r
-        ));
-        setActiveRequest(null);
-        setRecommendation('');
-        setRecommendationAr('');
+        try {
+            const { error } = await supabase
+                .from('legal_dashboard')
+                .update({
+                    lawyer_recommendations: recommendation,
+                    arabic_translation: recommendationAr,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', reqId);
+
+            if (error) throw error;
+
+            setRequests(reqs => reqs.map(r =>
+                r.id === reqId ? { ...r, recommendation, arabic_translation: recommendationAr, status: 'replied' } : r
+            ));
+            setActiveRequest(null);
+            setRecommendation('');
+            setRecommendationAr('');
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : 'Unknown error';
+            console.error('Error saving recommendation:', msg);
+            alert('Failed to save counsel recommendation: ' + msg);
+        }
     };
 
     return (
