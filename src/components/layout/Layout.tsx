@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { LayoutDashboard, Clock, FileBadge, Scale, LogOut, Menu, X, User, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, Clock, FileBadge, Scale, LogOut, Menu, X, Sun, Moon } from 'lucide-react';
 
 const Layout = () => {
     const { profile, signOut } = useAuth();
@@ -20,7 +20,6 @@ const Layout = () => {
         { path: '/timeline', icon: <Clock className="w-5 h-5" />, label: 'Timeline Events' },
         { path: '/evidence', icon: <FileBadge className="w-5 h-5" />, label: 'Evidence Vault' },
         { path: '/lawyer', icon: <Scale className="w-5 h-5" />, label: 'Lawyer Portal' },
-        { path: '/profile', icon: <User className="w-5 h-5" />, label: 'User Profile' },
     ];
 
     return (
@@ -91,7 +90,7 @@ const Layout = () => {
                             </div>
                         )}
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-text-main truncate">{profile?.full_name || 'Authorized User'}</p>
+                            <p className="text-sm font-semibold text-text-main truncate">{profile?.full_name || 'User Profile'}</p>
                             <p className="text-xs text-slate-400 capitalize">{profile?.role}</p>
                         </div>
                     </button>
