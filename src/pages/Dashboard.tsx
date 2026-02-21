@@ -61,7 +61,7 @@ export default function Dashboard() {
             <div className="max-w-6xl mx-auto pb-12 flex items-center justify-center min-h-[50vh]">
                 <div className="flex flex-col items-center gap-4">
                     <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-slate-400 font-medium tracking-wide">Retrieving latest case data...</p>
+                    <p className="text-text-muted font-medium tracking-wide">Retrieving latest case data...</p>
                 </div>
             </div>
         );
@@ -71,7 +71,7 @@ export default function Dashboard() {
         <div className="max-w-6xl mx-auto pb-12">
             <header className="mb-8">
                 <h1 className="text-3xl font-bold text-text-main mb-2">Legal Strategy Overview</h1>
-                <p className="text-slate-400">High-level summary of the shareholder dispute case.</p>
+                <p className="text-text-muted">High-level summary of the shareholder dispute case.</p>
             </header>
 
             {/* Economic Duress Monitor Alert */}
@@ -85,7 +85,7 @@ export default function Dashboard() {
                             Economic Duress Alert
                             <span className="text-xs bg-red-500/20 px-2 py-0.5 rounded-full text-red-300">CRITICAL</span>
                         </h3>
-                        <p className="text-slate-300 mt-1">
+                        <p className="text-text-muted mt-1">
                             Opposing party has marked <strong>{unpaidWeeks} weekly payments</strong> as 'Not Received'. This establishes a deliberate starvation strategy indicative of bad faith negotiations.
                         </p>
                     </div>
@@ -97,7 +97,7 @@ export default function Dashboard() {
                 <div className="glass-panel p-6 rounded-2xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
                     <div className="flex justify-between items-start mb-4 relative z-10">
-                        <h3 className="text-slate-400 font-medium tracking-wide text-sm uppercase">Total Calculated Debt</h3>
+                        <h3 className="text-text-muted font-medium tracking-wide text-sm uppercase">Total Calculated Debt</h3>
                         <div className="p-2 bg-bg-surface rounded-lg border border-slate-800">
                             <TrendingUp className="w-5 h-5 text-amber-500" />
                         </div>
@@ -106,45 +106,45 @@ export default function Dashboard() {
                         <div className="text-4xl font-bold text-text-main mb-1">
                             {formatCurrency(totalDebt)}
                         </div>
-                        <p className="text-xs text-slate-500">Includes all GOSI salary gaps & accrued rates</p>
+                        <p className="text-xs text-text-muted">Includes all GOSI salary gaps & accrued rates</p>
                     </div>
                 </div>
 
                 <div className="glass-panel p-6 rounded-2xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
                     <div className="flex justify-between items-start mb-4 relative z-10">
-                        <h3 className="text-slate-400 font-medium tracking-wide text-sm uppercase">Verified Evidence</h3>
+                        <h3 className="text-text-muted font-medium tracking-wide text-sm uppercase">Verified Evidence</h3>
                         <div className="p-2 bg-bg-surface rounded-lg border border-slate-800">
                             <ShieldCheck className="w-5 h-5 text-blue-400" />
                         </div>
                     </div>
                     <div className="relative z-10">
                         <div className="text-4xl font-bold text-text-main mb-1">{evidenceCount}</div>
-                        <p className="text-xs text-slate-500">Government & Official Documents in Vault</p>
+                        <p className="text-xs text-text-muted">Government & Official Documents in Vault</p>
                     </div>
                 </div>
 
                 <div className="glass-panel p-6 rounded-2xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
                     <div className="flex justify-between items-start mb-4 relative z-10">
-                        <h3 className="text-slate-400 font-medium tracking-wide text-sm uppercase">Legal Risk Level</h3>
+                        <h3 className="text-text-muted font-medium tracking-wide text-sm uppercase">Legal Risk Level</h3>
                         <div className="p-2 bg-bg-surface rounded-lg border border-slate-800">
                             <Scale className="w-5 h-5 text-emerald-400" />
                         </div>
                     </div>
                     <div className="relative z-10">
                         <div className="text-4xl font-bold text-emerald-400 mb-1">High</div>
-                        <p className="text-xs text-slate-500">Based on recent hostile correspondence</p>
+                        <p className="text-xs text-text-muted">Based on recent hostile correspondence</p>
                     </div>
                 </div>
             </div>
 
             {/* Case Summary Panel */}
-            <h2 className="text-xl font-semibold text-white mb-4 mt-12 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-slate-400" /> Executive Summary
+            <h2 className="text-xl font-semibold text-text-main mb-4 mt-12 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-text-muted" /> Executive Summary
             </h2>
             <div className="glass-panel p-6 rounded-2xl">
-                <div className="prose prose-invert max-w-none text-slate-300">
+                <div className="prose prose-invert max-w-none text-text-muted">
                     <TranslatedText
                         original="This portal organizes the evidence timeline and financial claims against the opposing partner. The core assertion is that the partner enacted a covert dissolution on February 12th in bad faith, subsequently restricting financial resources to coerce an unfavorable settlement."
                         translated="تنظم هذه البوابة التسلسل الزمني للأدلة والمطالبات المالية ضد الشريك المعارض. التأكيد الأساسي هو أن الشريك نفذ حل الشركة سراً في 12 فبراير بسوء نية، وقام بعد ذلك بتقييد الموارد المالية لإجبار تسوية غير المواتية."

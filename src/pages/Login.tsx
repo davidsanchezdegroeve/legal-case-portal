@@ -68,7 +68,7 @@ const Login = () => {
                             <Shield className="w-8 h-8 text-amber-400" />
                         </div>
                         <h1 className="text-3xl font-bold tracking-tight text-text-main mb-2">Legal Defense</h1>
-                        <p className="text-slate-400 text-sm font-medium">Secure Strategy & Evidence Portal</p>
+                        <p className="text-text-muted text-sm font-medium">Secure Strategy & Evidence Portal</p>
                     </div>
 
                     {isResetMode ? (
@@ -86,20 +86,20 @@ const Login = () => {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="text-slate-300 text-sm text-center mb-2">
+                                    <div className="text-text-muted text-sm text-center mb-2">
                                         Enter your email address and we'll send you a link to reset your password.
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-slate-300 block ml-1">Email Address</label>
+                                        <label className="text-sm font-medium text-text-muted block ml-1">Email Address</label>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                <Mail className="h-5 w-5 text-slate-500" />
+                                                <Mail className="h-5 w-5 text-text-muted" />
                                             </div>
                                             <input
                                                 type="email"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
-                                                className="w-full pl-11 pr-4 py-3 bg-bg-surface/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
+                                                className="w-full pl-11 pr-4 py-3 bg-bg-surface/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-text-main placeholder-slate-500 transition-all outline-none"
                                                 placeholder="admin@legal.local"
                                                 required
                                             />
@@ -109,7 +109,7 @@ const Login = () => {
                                     <button
                                         type="submit"
                                         disabled={isLoading || !email}
-                                        className="w-full bg-amber-600 hover:bg-amber-500 text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-amber-900/40 mt-4 flex items-center justify-center gap-2 border border-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full bg-amber-600 hover:bg-amber-500 text-text-main font-medium py-3 rounded-xl transition-all shadow-lg shadow-amber-900/40 mt-4 flex items-center justify-center gap-2 border border-amber-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Send Reset Link'}
                                     </button>
@@ -124,7 +124,7 @@ const Login = () => {
                                         setResetEmailSent(false);
                                         setError(null);
                                     }}
-                                    className="text-sm text-slate-400 hover:text-text-main transition-colors"
+                                    className="text-sm text-text-muted hover:text-text-main transition-colors"
                                 >
                                     Cancel and return to login
                                 </button>
@@ -139,16 +139,16 @@ const Login = () => {
                             )}
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-slate-300 block ml-1">Email Address</label>
+                                <label className="text-sm font-medium text-text-muted block ml-1">Email Address</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Mail className="h-5 w-5 text-slate-500" />
+                                        <Mail className="h-5 w-5 text-text-muted" />
                                     </div>
                                     <input
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="w-full pl-11 pr-4 py-3 bg-bg-surface/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
+                                        className="w-full pl-11 pr-4 py-3 bg-bg-surface/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-text-main placeholder-slate-500 transition-all outline-none"
                                         placeholder="admin@legal.local"
                                         required
                                     />
@@ -157,7 +157,7 @@ const Login = () => {
 
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between ml-1">
-                                    <label className="text-sm font-medium text-slate-300 block">Password</label>
+                                    <label className="text-sm font-medium text-text-muted block">Password</label>
                                     <button
                                         type="button"
                                         onClick={() => setIsResetMode(true)}
@@ -168,13 +168,13 @@ const Login = () => {
                                 </div>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Lock className="h-5 w-5 text-slate-500" />
+                                        <Lock className="h-5 w-5 text-text-muted" />
                                     </div>
                                     <input
                                         type="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full pl-11 pr-4 py-3 bg-bg-surface/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
+                                        className="w-full pl-11 pr-4 py-3 bg-bg-surface/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-text-main placeholder-slate-500 transition-all outline-none"
                                         placeholder="••••••••"
                                         required
                                     />
@@ -184,7 +184,7 @@ const Login = () => {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-blue-900/40 mt-4 flex items-center justify-center gap-2 group border border-blue-500/50"
+                                className="w-full bg-blue-600 hover:bg-blue-500 text-text-main font-medium py-3 rounded-xl transition-all shadow-lg shadow-blue-900/40 mt-4 flex items-center justify-center gap-2 group border border-blue-500/50"
                             >
                                 {isLoading ? (
                                     <Loader2 className="h-5 w-5 animate-spin" />
@@ -196,7 +196,7 @@ const Login = () => {
                     )}
 
                     <div className="mt-8 pt-6 border-t border-slate-800/50 text-center">
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-text-muted">
                             Access restricted to authorized legal counsel and administration.<br />All activity is logged and monitored.
                         </p>
                     </div>

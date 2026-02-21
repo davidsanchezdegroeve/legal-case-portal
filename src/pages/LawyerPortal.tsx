@@ -115,7 +115,7 @@ export default function LawyerPortal() {
             <div className="w-1/3 flex flex-col gap-4">
                 <header className="mb-4">
                     <h1 className="text-2xl font-bold text-text-main flex items-center gap-2"><Briefcase className="w-6 h-6 text-emerald-500" /> My Requests</h1>
-                    <p className="text-slate-400 text-sm">Action items requiring legal counsel advice.</p>
+                    <p className="text-text-muted text-sm">Action items requiring legal counsel advice.</p>
                 </header>
 
                 <div className="flex-1 overflow-y-auto space-y-4 pr-2">
@@ -132,9 +132,9 @@ export default function LawyerPortal() {
                                 <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${req.status === 'pending' ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30'}`}>
                                     {req.status}
                                 </span>
-                                <ChevronRight className={`w-4 h-4 ${activeRequest === req.id ? 'text-blue-400' : 'text-slate-500'}`} />
+                                <ChevronRight className={`w-4 h-4 ${activeRequest === req.id ? 'text-blue-400' : 'text-text-muted'}`} />
                             </div>
-                            <h4 className="text-slate-100 font-semibold mb-1 line-clamp-2">{req.title}</h4>
+                            <h4 className="text-text-main font-semibold mb-1 line-clamp-2">{req.title}</h4>
                         </button>
                     ))}
                 </div>
@@ -150,8 +150,8 @@ export default function LawyerPortal() {
                                 <div className="mb-8">
                                     <h2 className="text-2xl font-bold text-text-main mb-4">{req.title}</h2>
                                     <div className="bg-bg-surface/80 p-5 rounded-xl border border-slate-800">
-                                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Admin Request Context</h4>
-                                        <p className="text-slate-300 leading-relaxed">{req.description}</p>
+                                        <h4 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Admin Request Context</h4>
+                                        <p className="text-text-muted leading-relaxed">{req.description}</p>
                                     </div>
                                 </div>
 
@@ -173,7 +173,7 @@ export default function LawyerPortal() {
                                         <div className="mt-4 flex justify-end">
                                             <button
                                                 onClick={() => handleSaveRecommendation(req.id)}
-                                                className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-6 py-2.5 rounded-xl transition-colors shadow-lg shadow-emerald-900/20 flex items-center gap-2"
+                                                className="bg-emerald-600 hover:bg-emerald-500 text-text-main font-medium px-6 py-2.5 rounded-xl transition-colors shadow-lg shadow-emerald-900/20 flex items-center gap-2"
                                             >
                                                 Submit Counsel
                                                 <Scale className="w-4 h-4" />
@@ -185,9 +185,9 @@ export default function LawyerPortal() {
                         ))}
                     </>
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-center text-slate-500">
+                    <div className="h-full flex flex-col items-center justify-center text-center text-text-muted">
                         <Scale className="w-16 h-16 opacity-20 mb-4" />
-                        <h3 className="text-xl font-medium text-slate-300">Select a Request</h3>
+                        <h3 className="text-xl font-medium text-text-muted">Select a Request</h3>
                         <p className="mt-2 max-w-sm mx-auto">Click on a pending request from the left panel to review the details and provide your legal recommendation.</p>
                     </div>
                 )}

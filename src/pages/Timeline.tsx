@@ -81,7 +81,7 @@ export default function Timeline() {
             <div className="max-w-4xl mx-auto pb-12 flex items-center justify-center min-h-[50vh]">
                 <div className="flex flex-col items-center gap-4">
                     <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-slate-400 font-medium tracking-wide">Loading timeline records...</p>
+                    <p className="text-text-muted font-medium tracking-wide">Loading timeline records...</p>
                 </div>
             </div>
         );
@@ -92,12 +92,12 @@ export default function Timeline() {
             <header className="mb-10 flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-bold text-text-main mb-2">Event Timeline</h1>
-                    <p className="text-slate-400">Chronological ledger of legal and operational incidents.</p>
+                    <p className="text-text-muted">Chronological ledger of legal and operational incidents.</p>
                 </div>
                 {isAdmin && (
                     <button
                         onClick={() => setShowAdd(!showAdd)}
-                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl transition-colors shadow-lg shadow-blue-900/20"
+                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-text-main px-4 py-2 rounded-xl transition-colors shadow-lg shadow-blue-900/20"
                     >
                         {showAdd ? 'Cancel' : <><Plus className="w-5 h-5" /> Add Incident</>}
                     </button>
@@ -111,8 +111,8 @@ export default function Timeline() {
 
                     <div className="space-y-5">
                         <div>
-                            <label className="text-sm font-medium text-slate-300 ml-1 block mb-1">Event Title</label>
-                            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Email intercepted" className="w-full bg-bg-surface/80 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:border-blue-500 outline-none" />
+                            <label className="text-sm font-medium text-text-muted ml-1 block mb-1">Event Title</label>
+                            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Email intercepted" className="w-full bg-bg-surface/80 border border-slate-700 rounded-xl px-4 py-2.5 text-text-main focus:border-blue-500 outline-none" />
                         </div>
 
                         <DualLanguageInput
@@ -129,7 +129,7 @@ export default function Timeline() {
                             <input type="checkbox" checked={isBadFaith} onChange={(e) => setIsBadFaith(e.target.checked)} className="w-5 h-5 rounded border-slate-600 text-red-500 focus:ring-red-500/50 bg-slate-800" />
                             <div>
                                 <span className="text-text-main font-medium block">Flag as Bad Faith Indicator</span>
-                                <span className="text-xs text-slate-400">Will highlight this event as a critical breach of fiduciary duty.</span>
+                                <span className="text-xs text-text-muted">Will highlight this event as a critical breach of fiduciary duty.</span>
                             </div>
                         </label>
 
@@ -144,8 +144,8 @@ export default function Timeline() {
             {events.length === 0 ? (
                 <div className="text-center py-20 glass-panel rounded-3xl border border-slate-800/50">
                     <CircleDot className="w-12 h-12 text-slate-600 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium text-slate-300">No events found</h3>
-                    <p className="text-slate-500 text-sm mt-2">The timeline ledger is currently empty.</p>
+                    <h3 className="text-lg font-medium text-text-muted">No events found</h3>
+                    <p className="text-text-muted text-sm mt-2">The timeline ledger is currently empty.</p>
                 </div>
             ) : (
                 <div className="relative pl-8 sm:pl-32 py-6 space-y-12 before:absolute before:inset-0 before:ml-12 sm:before:ml-[7.5rem] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
@@ -167,7 +167,7 @@ export default function Timeline() {
                             {/* Content Box */}
                             <div className="w-[calc(100%-4rem)] md:w-[calc(50%-3rem)] glass-panel p-5 rounded-2xl relative shadow-lg transition-transform duration-300 group-hover:-translate-y-1">
                                 <div className="flex items-center justify-between mb-3">
-                                    <div className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                                    <div className="text-xs font-bold uppercase tracking-wider text-text-muted flex items-center gap-2">
                                         {new Date(event.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                     </div>
                                     {event.is_bad_faith_indicator && (
@@ -177,7 +177,7 @@ export default function Timeline() {
                                     )}
                                 </div>
 
-                                <h4 className={`text-lg font-bold mb-3 ${event.is_bad_faith_indicator ? 'text-red-300' : 'text-slate-100'}`}>
+                                <h4 className={`text-lg font-bold mb-3 ${event.is_bad_faith_indicator ? 'text-red-300' : 'text-text-main'}`}>
                                     {event.event_title}
                                 </h4>
 

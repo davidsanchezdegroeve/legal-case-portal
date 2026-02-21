@@ -139,7 +139,7 @@ export default function EvidenceGallery() {
             <div className="max-w-6xl mx-auto pb-12 flex items-center justify-center min-h-[50vh]">
                 <div className="flex flex-col items-center gap-4">
                     <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-slate-400 font-medium tracking-wide">Decrypting vault contents...</p>
+                    <p className="text-text-muted font-medium tracking-wide">Decrypting vault contents...</p>
                 </div>
             </div>
         );
@@ -150,12 +150,12 @@ export default function EvidenceGallery() {
             <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-text-main mb-2">Evidence Vault</h1>
-                    <p className="text-slate-400">Secure repository of all documentation verifying the claims.</p>
+                    <p className="text-text-muted">Secure repository of all documentation verifying the claims.</p>
                 </div>
                 {isLawyerOrAdmin && (
                     <button
                         onClick={() => setShowUpload(!showUpload)}
-                        className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-blue-900/20 w-full md:w-auto font-medium"
+                        className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-text-main px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-blue-900/20 w-full md:w-auto font-medium"
                     >
                         {showUpload ? 'Cancel Upload' : <><UploadCloud className="w-5 h-5" /> Upload Evidence</>}
                     </button>
@@ -176,16 +176,16 @@ export default function EvidenceGallery() {
                                 placeholder="e.g. GOSI Certificate"
                             />
                             <div>
-                                <label className="text-sm font-medium text-slate-300 ml-1 block mb-1">Verification Code (If applicable)</label>
-                                <input type="text" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} placeholder="e.g. 109884831" className="w-full bg-bg-surface/80 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 placeholder:text-slate-600 focus:border-blue-500 outline-none" />
+                                <label className="text-sm font-medium text-text-muted ml-1 block mb-1">Verification Code (If applicable)</label>
+                                <input type="text" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} placeholder="e.g. 109884831" className="w-full bg-bg-surface/80 border border-slate-700 rounded-xl px-4 py-2.5 text-text-main placeholder:text-slate-600 focus:border-blue-500 outline-none" />
                             </div>
                         </div>
 
                         <div className="flex flex-col justify-end">
                             <div className="border border-dashed border-slate-600 rounded-xl p-6 text-center bg-bg-surface hover:bg-slate-800/50 transition">
-                                <FileBadge className="w-8 h-8 text-slate-500 mx-auto mb-3" />
-                                <p className="text-sm text-slate-400 mb-4">Select the PDF file containing the evidence.</p>
-                                <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} className="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600/20 file:text-blue-400 hover:file:bg-blue-600/30 cursor-pointer" />
+                                <FileBadge className="w-8 h-8 text-text-muted mx-auto mb-3" />
+                                <p className="text-sm text-text-muted mb-4">Select the PDF file containing the evidence.</p>
+                                <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} className="block w-full text-sm text-text-muted file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600/20 file:text-blue-400 hover:file:bg-blue-600/30 cursor-pointer" />
                             </div>
                         </div>
                     </div>
@@ -201,8 +201,8 @@ export default function EvidenceGallery() {
             {documents.length === 0 ? (
                 <div className="text-center py-20 glass-panel rounded-3xl border border-slate-800/50">
                     <Folders className="w-12 h-12 text-slate-600 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium text-slate-300">Vault is empty</h3>
-                    <p className="text-slate-500 text-sm mt-2">No evidence documents have been securely uploaded yet.</p>
+                    <h3 className="text-lg font-medium text-text-muted">Vault is empty</h3>
+                    <p className="text-text-muted text-sm mt-2">No evidence documents have been securely uploaded yet.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -236,7 +236,7 @@ export default function EvidenceGallery() {
                                         {doc.category === 'Audio' && <UploadCloud className="w-6 h-6 text-purple-400" />}
                                         {!['Communication', 'Financial', 'Government', 'Audio'].includes(doc.category) && <FileText className="w-6 h-6 text-blue-400" />}
                                     </div>
-                                    <div className="text-[10px] font-bold bg-slate-800 text-slate-400 px-2 py-1 rounded uppercase tracking-wider">
+                                    <div className="text-[10px] font-bold bg-slate-800 text-text-muted px-2 py-1 rounded uppercase tracking-wider">
                                         {doc.category}
                                     </div>
                                 </div>
@@ -244,17 +244,17 @@ export default function EvidenceGallery() {
                                 <h4 className="text-lg font-bold text-text-main mb-2 leading-tight">
                                     {doc.title}
                                 </h4>
-                                <p className="text-xs text-slate-400 font-arabic mb-4 line-clamp-2" dir="rtl">{doc.arabic_translation}</p>
+                                <p className="text-xs text-text-muted font-arabic mb-4 line-clamp-2" dir="rtl">{doc.arabic_translation}</p>
 
                                 {/* Bilingual Legal Significance */}
                                 {(doc.legal_significance_en || doc.legal_significance_ar) && (
                                     <div className="my-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm">
                                         <div className="flex items-center gap-2 mb-2">
                                             <Scale className="w-4 h-4 text-amber-500" />
-                                            <span className="font-semibold text-slate-300">Legal Context</span>
+                                            <span className="font-semibold text-text-muted">Legal Context</span>
                                         </div>
-                                        {doc.legal_significance_en && <p className="text-slate-300 mb-3">{doc.legal_significance_en}</p>}
-                                        {doc.legal_significance_ar && <p className="text-slate-400 font-arabic border-t border-slate-700/50 pt-2" dir="rtl">{doc.legal_significance_ar}</p>}
+                                        {doc.legal_significance_en && <p className="text-text-muted mb-3">{doc.legal_significance_en}</p>}
+                                        {doc.legal_significance_ar && <p className="text-text-muted font-arabic border-t border-slate-700/50 pt-2" dir="rtl">{doc.legal_significance_ar}</p>}
                                     </div>
                                 )}
 
@@ -266,7 +266,7 @@ export default function EvidenceGallery() {
                                             <span className="text-[10px] text-rose-500">Extracted from source</span>
                                         </div>
                                         <div className="p-3">
-                                            <table className="w-full text-xs text-left text-slate-300">
+                                            <table className="w-full text-xs text-left text-text-muted">
                                                 <thead>
                                                     <tr className="border-b border-rose-500/20 text-rose-400">
                                                         <th className="font-medium pb-2 w-20">Date</th>
@@ -276,7 +276,7 @@ export default function EvidenceGallery() {
                                                 </thead>
                                                 <tbody className="divide-y divide-slate-800/50">
                                                     <tr>
-                                                        <td className="py-2 text-slate-400">Jan 15</td>
+                                                        <td className="py-2 text-text-muted">Jan 15</td>
                                                         <td className="py-2">Funds Transfer Initiated</td>
                                                         <td className="py-2 text-right text-emerald-400">Cleared</td>
                                                     </tr>
@@ -286,7 +286,7 @@ export default function EvidenceGallery() {
                                                         <td className="py-2 text-right text-rose-400 font-bold">Executed</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="py-2 text-slate-400">Mar 01</td>
+                                                        <td className="py-2 text-text-muted">Mar 01</td>
                                                         <td className="py-2">Account Frozen</td>
                                                         <td className="py-2 text-right text-amber-400">Pending</td>
                                                     </tr>
@@ -303,7 +303,7 @@ export default function EvidenceGallery() {
                                             <ShieldCheck className="w-4 h-4 text-emerald-500" />
                                             <span className="text-xs text-emerald-500 font-medium">Verified Gov Document</span>
                                         </div>
-                                        <span className="text-xs text-slate-500 font-mono">CODE: {doc.verification_code}</span>
+                                        <span className="text-xs text-text-muted font-mono">CODE: {doc.verification_code}</span>
                                     </div>
                                 )}
 
@@ -314,7 +314,7 @@ export default function EvidenceGallery() {
                                                 e.stopPropagation();
                                                 handleViewDocument(doc.file_url!);
                                             }}
-                                            className="w-full py-2.5 bg-bg-surface hover:bg-slate-800 text-slate-200 justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-slate-800 hover:border-slate-700"
+                                            className="w-full py-2.5 bg-bg-surface hover:bg-slate-800 text-text-main justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-slate-800 hover:border-slate-700"
                                         >
                                             <ExternalLink className="w-4 h-4" /> View Original Document
                                         </button>
@@ -322,7 +322,7 @@ export default function EvidenceGallery() {
                                         <button
                                             disabled
                                             onClick={(e) => e.stopPropagation()}
-                                            className="w-full py-2.5 bg-bg-surface/50 text-slate-500 justify-center rounded-xl flex items-center gap-2 text-sm font-medium border border-slate-800/50 cursor-not-allowed"
+                                            className="w-full py-2.5 bg-bg-surface/50 text-text-muted justify-center rounded-xl flex items-center gap-2 text-sm font-medium border border-slate-800/50 cursor-not-allowed"
                                         >
                                             <Lock className="w-4 h-4" /> Offline Evidence
                                         </button>
@@ -344,7 +344,7 @@ export default function EvidenceGallery() {
                     >
                         <button
                             onClick={() => setSelectedEvidence(null)}
-                            className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/80 rounded-full text-white transition-colors"
+                            className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/80 rounded-full text-text-main transition-colors"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -355,18 +355,18 @@ export default function EvidenceGallery() {
                             {(selectedEvidence.legal_significance_en || selectedEvidence.legal_significance_ar) ? (
                                 <div className="space-y-3">
                                     {selectedEvidence.legal_significance_en && (
-                                        <p className="text-sm text-slate-300 leading-relaxed bg-black/20 p-3 rounded-lg border border-slate-700/50">
+                                        <p className="text-sm text-text-muted leading-relaxed bg-black/20 p-3 rounded-lg border border-slate-700/50">
                                             {selectedEvidence.legal_significance_en}
                                         </p>
                                     )}
                                     {selectedEvidence.legal_significance_ar && (
-                                        <p className="text-sm text-slate-300 leading-relaxed font-arabic text-right bg-black/20 p-3 rounded-lg border border-slate-700/50" dir="rtl">
+                                        <p className="text-sm text-text-muted leading-relaxed font-arabic text-right bg-black/20 p-3 rounded-lg border border-slate-700/50" dir="rtl">
                                             {selectedEvidence.legal_significance_ar}
                                         </p>
                                     )}
                                 </div>
                             ) : (
-                                <p className="text-sm text-slate-400 italic">No legal context provided.</p>
+                                <p className="text-sm text-text-muted italic">No legal context provided.</p>
                             )}
                         </div>
 
@@ -379,7 +379,7 @@ export default function EvidenceGallery() {
                                     className="max-w-full max-h-full object-contain rounded"
                                 />
                             ) : (
-                                <div className="text-center text-slate-500">
+                                <div className="text-center text-text-muted">
                                     <FileBadge className="w-16 h-16 mx-auto mb-4 opacity-50" />
                                     <p>No screenshot available for this evidence.</p>
                                 </div>

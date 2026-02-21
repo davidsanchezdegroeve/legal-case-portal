@@ -35,13 +35,13 @@ export function DualLanguageInput({
         if (hasTranslated) setHasTranslated(false); // Reset translation flag if they edit again
     };
 
-    const inputClasses = "w-full bg-bg-surface/80 border border-slate-700 rounded-xl pl-4 pr-11 py-2.5 text-slate-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 outline-none transition-all placeholder:text-slate-600";
+    const inputClasses = "w-full bg-bg-surface/80 border border-slate-700 rounded-xl pl-4 pr-11 py-2.5 text-text-main focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 outline-none transition-all placeholder:text-slate-600";
 
     return (
         <div className="space-y-1.5">
             <div className="flex justify-between items-center">
-                <label className="text-sm font-medium text-slate-300 ml-1">{label}</label>
-                <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                <label className="text-sm font-medium text-text-muted ml-1">{label}</label>
+                <span className="text-[10px] text-text-muted flex items-center gap-1">
                     Auto-translates on blur <Sparkles className="w-3 h-3" />
                 </span>
             </div>
@@ -65,7 +65,7 @@ export function DualLanguageInput({
                     />
                 )}
 
-                <div className="absolute right-3 top-3 text-slate-500 group-focus-within:text-blue-400 transition-colors">
+                <div className="absolute right-3 top-3 text-text-muted group-focus-within:text-blue-400 transition-colors">
                     {isTranslating ? (
                         <Loader2 className="w-5 h-5 animate-spin text-amber-500" />
                     ) : (

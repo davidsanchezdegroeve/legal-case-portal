@@ -48,14 +48,14 @@ const Layout = () => {
                         Legal Portal
                     </h1>
                     <button
-                        className="md:hidden text-slate-400 hover:text-text-main"
+                        className="md:hidden text-text-muted hover:text-text-main"
                         onClick={() => setIsMobileMenuOpen(false)}
                     >
                         <X className="w-6 h-6" />
                     </button>
                 </div>
                 <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-                    <div className="text-[10px] font-bold text-slate-500 px-3 mb-4 uppercase tracking-wider">Navigation</div>
+                    <div className="text-[10px] font-bold text-text-muted px-3 mb-4 uppercase tracking-wider">Navigation</div>
                     {navItems.map((item) => (
                         <NavLink
                             key={item.path}
@@ -64,7 +64,7 @@ const Layout = () => {
                             className={({ isActive }) =>
                                 `flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${isActive
                                     ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]'
-                                    : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 border border-transparent'
+                                    : 'text-text-muted hover:bg-slate-800/50 hover:text-text-main border border-transparent'
                                 }`
                             }
                         >
@@ -91,10 +91,10 @@ const Layout = () => {
                         )}
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-semibold text-text-main truncate">{profile?.full_name || 'User Profile'}</p>
-                            <p className="text-xs text-slate-400 capitalize">{profile?.role}</p>
+                            <p className="text-xs text-text-muted capitalize">{profile?.role}</p>
                         </div>
                     </button>
-                    <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-400 font-medium hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                    <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-text-muted font-medium hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
                         <LogOut className="w-4 h-4" /> Sign Out
                     </button>
                 </div>
@@ -105,12 +105,12 @@ const Layout = () => {
                 <header className="h-16 border-b border-border-default bg-bg-base/80 backdrop-blur-md flex items-center px-4 md:px-8 justify-between z-10 w-full">
                     <div className="flex items-center gap-3">
                         <button
-                            className="md:hidden p-2 -ml-2 text-slate-400 hover:text-text-main rounded-lg hover:bg-slate-800 transition-colors"
+                            className="md:hidden p-2 -ml-2 text-text-muted hover:text-text-main rounded-lg hover:bg-slate-800 transition-colors"
                             onClick={() => setIsMobileMenuOpen(true)}
                         >
                             <Menu className="w-6 h-6" />
                         </button>
-                        <div className="font-medium text-sm text-slate-400 md:ml-0">Overview</div>
+                        <div className="font-medium text-sm text-text-muted md:ml-0">Overview</div>
                     </div>
                     <div className="flex items-center gap-4">
                         <button
@@ -124,7 +124,7 @@ const Layout = () => {
                         {profile?.company_logo_url ? (
                             <img src={profile.company_logo_url} alt="Company Logo" className="h-8 max-w-[120px] object-contain" />
                         ) : profile?.company_name ? (
-                            <div className="text-sm font-bold text-slate-300">{profile.company_name}</div>
+                            <div className="text-sm font-bold text-text-muted">{profile.company_name}</div>
                         ) : (
                             <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 cursor-pointer" onClick={() => navigate('/profile')}></div>
                         )}

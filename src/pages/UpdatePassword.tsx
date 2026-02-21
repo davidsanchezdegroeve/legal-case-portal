@@ -81,7 +81,7 @@ const UpdatePassword = () => {
                             <KeyRound className="w-8 h-8 text-emerald-400" />
                         </div>
                         <h1 className="text-2xl font-bold tracking-tight text-text-main mb-2">Update Password</h1>
-                        <p className="text-slate-400 text-sm font-medium">Please enter your new secure password.</p>
+                        <p className="text-text-muted text-sm font-medium">Please enter your new secure password.</p>
                     </div>
 
                     <form onSubmit={handleUpdatePassword} className="space-y-5 text-left">
@@ -92,16 +92,16 @@ const UpdatePassword = () => {
                         )}
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300 block ml-1">New Password</label>
+                            <label className="text-sm font-medium text-text-muted block ml-1">New Password</label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-slate-500" />
+                                    <Lock className="h-5 w-5 text-text-muted" />
                                 </div>
                                 <input
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-11 pr-4 py-3 bg-bg-surface/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
+                                    className="w-full pl-11 pr-4 py-3 bg-bg-surface/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 text-text-main placeholder-slate-500 transition-all outline-none"
                                     placeholder="••••••••"
                                     required
                                     disabled={error === "Your password reset link is invalid or has expired. Please request a new one."}
@@ -110,16 +110,16 @@ const UpdatePassword = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300 block ml-1">Confirm New Password</label>
+                            <label className="text-sm font-medium text-text-muted block ml-1">Confirm New Password</label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-slate-500" />
+                                    <Lock className="h-5 w-5 text-text-muted" />
                                 </div>
                                 <input
                                     type="password"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="w-full pl-11 pr-4 py-3 bg-bg-surface/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 text-slate-100 placeholder-slate-500 transition-all outline-none"
+                                    className="w-full pl-11 pr-4 py-3 bg-bg-surface/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 text-text-main placeholder-slate-500 transition-all outline-none"
                                     placeholder="••••••••"
                                     required
                                     disabled={error === "Your password reset link is invalid or has expired. Please request a new one."}
@@ -130,7 +130,7 @@ const UpdatePassword = () => {
                         <button
                             type="submit"
                             disabled={isLoading || error === "Your password reset link is invalid or has expired. Please request a new one."}
-                            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-emerald-900/40 mt-4 flex items-center justify-center gap-2 group border border-emerald-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full bg-emerald-600 hover:bg-emerald-500 text-text-main font-medium py-3 rounded-xl transition-all shadow-lg shadow-emerald-900/40 mt-4 flex items-center justify-center gap-2 group border border-emerald-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (
                                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -144,7 +144,7 @@ const UpdatePassword = () => {
                                 <button
                                     type="button"
                                     onClick={() => navigate('/login')}
-                                    className="text-sm text-slate-400 hover:text-text-main transition-colors"
+                                    className="text-sm text-text-muted hover:text-text-main transition-colors"
                                 >
                                     Return to login to request a new link
                                 </button>

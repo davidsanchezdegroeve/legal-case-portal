@@ -131,7 +131,7 @@ export default function UserProfile() {
         <div className="max-w-4xl mx-auto pb-12">
             <header className="mb-8">
                 <h1 className="text-3xl font-bold text-text-main mb-2">User Profile</h1>
-                <p className="text-slate-400">Manage your personal details, company branding, and security settings.</p>
+                <p className="text-text-muted">Manage your personal details, company branding, and security settings.</p>
             </header>
 
             {successMessage && (
@@ -183,7 +183,7 @@ export default function UserProfile() {
                                 ) : (
                                     <div className="flex flex-col items-center">
                                         <Building2 className="w-8 h-8 text-slate-600 mb-2" />
-                                        <span className="text-xs text-slate-500">Company Logo</span>
+                                        <span className="text-xs text-text-muted">Company Logo</span>
                                     </div>
                                 )}
                                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -215,24 +215,24 @@ export default function UserProfile() {
 
                         <form onSubmit={handleSaveProfile} className="space-y-5">
                             <div>
-                                <label className="text-sm font-medium text-slate-300 ml-1 block mb-1">Full Name</label>
+                                <label className="text-sm font-medium text-text-muted ml-1 block mb-1">Full Name</label>
                                 <input
                                     type="text"
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
-                                    className="w-full bg-bg-surface border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:border-blue-500 outline-none transition-colors"
+                                    className="w-full bg-bg-surface border border-slate-700 rounded-xl px-4 py-3 text-text-main placeholder:text-slate-600 focus:border-blue-500 outline-none transition-colors"
                                     placeholder="Enter your full name"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium text-slate-300 ml-1 block mb-1">Company Name</label>
+                                <label className="text-sm font-medium text-text-muted ml-1 block mb-1">Company Name</label>
                                 <div className="relative">
-                                    <Building2 className="w-5 h-5 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2" />
+                                    <Building2 className="w-5 h-5 text-text-muted absolute left-4 top-1/2 -translate-y-1/2" />
                                     <input
                                         type="text"
                                         value={companyName}
                                         onChange={(e) => setCompanyName(e.target.value)}
-                                        className="w-full bg-bg-surface border border-slate-700 rounded-xl pl-12 pr-4 py-3 text-slate-100 placeholder:text-slate-600 focus:border-amber-500 outline-none transition-colors"
+                                        className="w-full bg-bg-surface border border-slate-700 rounded-xl pl-12 pr-4 py-3 text-text-main placeholder:text-slate-600 focus:border-amber-500 outline-none transition-colors"
                                         placeholder="Enter your company name"
                                     />
                                 </div>
@@ -241,7 +241,7 @@ export default function UserProfile() {
                                 <button
                                     type="submit"
                                     disabled={isSaving}
-                                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-xl font-medium transition-colors shadow-lg shadow-blue-900/20 disabled:opacity-50"
+                                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-text-main px-6 py-2.5 rounded-xl font-medium transition-colors shadow-lg shadow-blue-900/20 disabled:opacity-50"
                                 >
                                     <Save className="w-4 h-4" />
                                     {isSaving ? 'Saving Changes...' : 'Save Profile Details'}
@@ -262,22 +262,22 @@ export default function UserProfile() {
                         <form onSubmit={handleUpdatePassword} className="space-y-5">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <div>
-                                    <label className="text-sm font-medium text-slate-300 ml-1 block mb-1">New Password</label>
+                                    <label className="text-sm font-medium text-text-muted ml-1 block mb-1">New Password</label>
                                     <input
                                         type="password"
                                         value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
-                                        className="w-full bg-bg-surface border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 outline-none transition-colors"
+                                        className="w-full bg-bg-surface border border-slate-700 rounded-xl px-4 py-3 text-text-main placeholder:text-slate-600 focus:border-emerald-500 outline-none transition-colors"
                                         placeholder="Must be at least 6 characters"
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium text-slate-300 ml-1 block mb-1">Confirm Password</label>
+                                    <label className="text-sm font-medium text-text-muted ml-1 block mb-1">Confirm Password</label>
                                     <input
                                         type="password"
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
-                                        className="w-full bg-bg-surface border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder:text-slate-600 focus:border-emerald-500 outline-none transition-colors"
+                                        className="w-full bg-bg-surface border border-slate-700 rounded-xl px-4 py-3 text-text-main placeholder:text-slate-600 focus:border-emerald-500 outline-none transition-colors"
                                         placeholder="Re-enter new password"
                                     />
                                 </div>
@@ -286,7 +286,7 @@ export default function UserProfile() {
                                 <button
                                     type="submit"
                                     disabled={isSaving || !newPassword || !confirmPassword}
-                                    className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-slate-600 px-6 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50"
+                                    className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-text-main border border-slate-700 hover:border-slate-600 px-6 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50"
                                 >
                                     Update Password
                                 </button>
