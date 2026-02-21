@@ -33,7 +33,7 @@ export default function LawyerPortal() {
                         id: row.id,
                         title: row.my_requests ? (row.my_requests.length > 60 ? row.my_requests.substring(0, 60) + '...' : row.my_requests) : 'Legal Request',
                         description: row.my_requests || 'No description provided.',
-                        status: row.lawyer_recommendations ? 'replied' : 'pending',
+                        status: (row.lawyer_recommendations ? 'replied' : 'pending') as 'pending' | 'replied',
                         recommendation: row.lawyer_recommendations || '',
                         arabic_translation: row.arabic_translation || ''
                     }));
