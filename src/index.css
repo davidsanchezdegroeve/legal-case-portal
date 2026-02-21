@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: #0f111a;
+  --color-surface: #1a1d29;
+  --color-surface-hover: #232736;
+  --color-surface-border: #2a2e3f;
+
+  --color-primary: #3b82f6;
+  --color-primary-hover: #60a5fa;
+  --color-primary-dark: #2563eb;
+
+  --color-accent: #f59e0b;
+  /* Golden accent for a legal feel */
+  --color-accent-hover: #fbbf24;
+
+  --color-text: #f8fafc;
+  --color-text-muted: #94a3b8;
+
+  --color-danger: #ef4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.1);
+  --color-success: #10b981;
+  --color-success-bg: rgba(16, 185, 129, 0.1);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background-color: rgba(26, 29, 41, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--color-surface-border);
+  }
+}
