@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { UploadCloud, FileText, ExternalLink, ShieldCheck, FileBadge, TrendingUp, MessageSquare, Lock, Folders, Scale } from 'lucide-react';
+import { UploadCloud, FileText, ExternalLink, ShieldCheck, FileBadge, TrendingUp, MessageSquare, Lock, Folders, Scale, X } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 
 export interface EvidenceDoc {
@@ -22,7 +22,7 @@ export interface EvidenceDoc {
 
 export default function EvidenceGallery() {
     const [documents, setDocuments] = useState<EvidenceDoc[]>([]);
-    const [filter, setFilter] = useState('all');
+    const [selectedEvidence, setSelectedEvidence] = useState<EvidenceDoc | null>(null);
     const [showUpload, setShowUpload] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -134,8 +134,6 @@ export default function EvidenceGallery() {
     };
 
 
-    const filteredDocs = documents.filter(doc => filter === 'all' || doc.category === filter);
-
     if (isLoading) {
         return (
             <div className="max-w-6xl mx-auto pb-12 flex items-center justify-center min-h-[50vh]">
@@ -199,21 +197,8 @@ export default function EvidenceGallery() {
                 </div>
             )}
 
-            {/* Filters */}
-            <div className="flex overflow-x-auto pb-4 mb-6 gap-2 no-scrollbar">
-                {['all', 'Communication', 'Financial', 'Government', 'Audio'].map(cat => (
-                    <button
-                        key={cat}
-                        onClick={() => setFilter(cat)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${filter === cat ? 'bg-blue-600/20 text-blue-400 border border-blue-500/50' : 'bg-[#151822] text-slate-400 border border-slate-800 hover:border-slate-700'}`}
-                    >
-                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                    </button>
-                ))}
-            </div>
-
             {/* Grid */}
-            {filteredDocs.length === 0 ? (
+            {documents.length === 0 ? (
                 <div className="text-center py-20 glass-panel rounded-3xl border border-slate-800/50">
                     <Folders className="w-12 h-12 text-slate-600 mx-auto mb-4 opacity-50" />
                     <h3 className="text-lg font-medium text-slate-300">Vault is empty</h3>
@@ -221,8 +206,12 @@ export default function EvidenceGallery() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredDocs.map((doc) => (
-                        <div key={doc.id} className="glass-panel rounded-2xl flex flex-col h-full group border border-slate-800 hover:border-slate-700 transition overflow-hidden">
+                    {documents.map((doc) => (
+                        <div
+                            key={doc.id}
+                            className="glass-panel rounded-2xl flex flex-col h-full group border border-slate-800 hover:border-slate-700 transition overflow-hidden cursor-pointer"
+                            onClick={() => setSelectedEvidence(doc)}
+                        >
 
                             {/* Hero Image Snippet */}
                             {doc._snippetSignedUrl ? (
@@ -321,13 +310,20 @@ export default function EvidenceGallery() {
                                 <div className="mt-auto pt-4">
                                     {doc.file_url ? (
                                         <button
-                                            onClick={() => handleViewDocument(doc.file_url!)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleViewDocument(doc.file_url!);
+                                            }}
                                             className="w-full py-2.5 bg-[#151822] hover:bg-slate-800 text-slate-200 justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-slate-800 hover:border-slate-700"
                                         >
                                             <ExternalLink className="w-4 h-4" /> View Original Document
                                         </button>
                                     ) : (
-                                        <button disabled className="w-full py-2.5 bg-[#151822]/50 text-slate-500 justify-center rounded-xl flex items-center gap-2 text-sm font-medium border border-slate-800/50 cursor-not-allowed">
+                                        <button
+                                            disabled
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="w-full py-2.5 bg-[#151822]/50 text-slate-500 justify-center rounded-xl flex items-center gap-2 text-sm font-medium border border-slate-800/50 cursor-not-allowed"
+                                        >
                                             <Lock className="w-4 h-4" /> Offline Evidence
                                         </button>
                                     )}
@@ -335,6 +331,61 @@ export default function EvidenceGallery() {
                             </div>
                         </div>
                     ))}
+                </div>
+            )}
+
+            {/* Modal */}
+            {selectedEvidence && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm"
+                    onClick={() => setSelectedEvidence(null)}>
+                    <div
+                        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col bg-[#151822] rounded-2xl overflow-hidden shadow-2xl border border-slate-700"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => setSelectedEvidence(null)}
+                            className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/80 rounded-full text-white transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+
+                        {/* Explanation Above Image */}
+                        <div className="p-6 sm:p-8 bg-slate-900 border-b border-slate-800 shrink-0">
+                            <h3 className="text-xl font-bold text-white mb-3 pr-8">{selectedEvidence.title}</h3>
+                            {(selectedEvidence.legal_significance_en || selectedEvidence.legal_significance_ar) ? (
+                                <div className="space-y-3">
+                                    {selectedEvidence.legal_significance_en && (
+                                        <p className="text-sm text-slate-300 leading-relaxed bg-black/20 p-3 rounded-lg border border-slate-700/50">
+                                            {selectedEvidence.legal_significance_en}
+                                        </p>
+                                    )}
+                                    {selectedEvidence.legal_significance_ar && (
+                                        <p className="text-sm text-slate-300 leading-relaxed font-arabic text-right bg-black/20 p-3 rounded-lg border border-slate-700/50" dir="rtl">
+                                            {selectedEvidence.legal_significance_ar}
+                                        </p>
+                                    )}
+                                </div>
+                            ) : (
+                                <p className="text-sm text-slate-400 italic">No legal context provided.</p>
+                            )}
+                        </div>
+
+                        {/* Screenshot */}
+                        <div className="flex-1 overflow-auto bg-black p-4 flex items-center justify-center min-h-[40vh]">
+                            {selectedEvidence._snippetSignedUrl ? (
+                                <img
+                                    src={selectedEvidence._snippetSignedUrl}
+                                    alt={selectedEvidence.title}
+                                    className="max-w-full max-h-full object-contain rounded"
+                                />
+                            ) : (
+                                <div className="text-center text-slate-500">
+                                    <FileBadge className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                                    <p>No screenshot available for this evidence.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
