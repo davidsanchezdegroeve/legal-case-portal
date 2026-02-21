@@ -96,6 +96,25 @@ export default function EvidenceGallery() {
         }
     };
 
+    const handleViewDocument = async (path: string) => {
+        try {
+            const { data, error } = await supabase.storage
+                .from('evidence-vault')
+                .createSignedUrl(path, 60);
+
+            if (error) throw error;
+            if (data?.signedUrl) {
+                window.open(data.signedUrl, '_blank');
+            } else {
+                throw new Error("Could not generate URL");
+            }
+        } catch (e: unknown) {
+            const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
+            console.error('Download Error:', errorMessage);
+            alert('Failed to securely access document: ' + errorMessage);
+        }
+    };
+
 
     const filteredDocs = documents.filter(doc => filter === 'all' || doc.category === filter);
 
@@ -217,14 +236,12 @@ export default function EvidenceGallery() {
 
                             <div className="mt-auto pt-4">
                                 {doc.file_url ? (
-                                    <a
-                                        href={doc.file_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                    <button
+                                        onClick={() => handleViewDocument(doc.file_url!)}
                                         className="w-full py-2.5 bg-[#151822] hover:bg-slate-800 text-slate-200 justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-slate-800 hover:border-slate-700"
                                     >
                                         <ExternalLink className="w-4 h-4" /> View Original Document
-                                    </a>
+                                    </button>
                                 ) : (
                                     <button disabled className="w-full py-2.5 bg-[#151822]/50 text-slate-500 justify-center rounded-xl flex items-center gap-2 text-sm font-medium border border-slate-800/50 cursor-not-allowed">
                                         <Lock className="w-4 h-4" /> Offline Evidence
