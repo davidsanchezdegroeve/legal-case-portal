@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { LayoutDashboard, Clock, FileBadge, Scale, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Clock, FileBadge, Scale, LogOut, Menu, X, User } from 'lucide-react';
 
 const Layout = () => {
     const { profile, signOut } = useAuth();
@@ -18,6 +18,7 @@ const Layout = () => {
         { path: '/timeline', icon: <Clock className="w-5 h-5" />, label: 'Timeline Events' },
         { path: '/evidence', icon: <FileBadge className="w-5 h-5" />, label: 'Evidence Vault' },
         { path: '/lawyer', icon: <Scale className="w-5 h-5" />, label: 'Lawyer Portal' },
+        { path: '/profile', icon: <User className="w-5 h-5" />, label: 'User Profile' },
     ];
 
     return (
@@ -73,16 +74,26 @@ const Layout = () => {
                 </nav>
 
                 <div className="p-4 border-t border-slate-800 mt-auto">
-                    <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-800/30 border border-slate-700/50">
-                        <div className="w-8 h-8 rounded-full bg-slate-700 flex flex-shrink-0 items-center justify-center font-bold text-sm text-amber-500 uppercase">
-                            {profile?.role?.[0] || 'U'}
-                        </div>
+                    <button
+                        onClick={() => {
+                            navigate('/profile');
+                            setIsMobileMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-800/30 border border-slate-700/50 hover:bg-slate-800/60 hover:border-blue-500/50 transition-all text-left mb-2"
+                    >
+                        {profile?.avatar_url ? (
+                            <img src={profile.avatar_url} alt="Avatar" className="w-8 h-8 rounded-full object-cover shadow-md" />
+                        ) : (
+                            <div className="w-8 h-8 rounded-full bg-slate-700 flex flex-shrink-0 items-center justify-center font-bold text-sm text-amber-500 uppercase">
+                                {profile?.role?.[0] || 'U'}
+                            </div>
+                        )}
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-semibold text-white truncate">{profile?.full_name || 'Authorized User'}</p>
                             <p className="text-xs text-slate-400 capitalize">{profile?.role}</p>
                         </div>
-                    </div>
-                    <button onClick={handleLogout} className="mt-2 w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-400 font-medium hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                    </button>
+                    <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-400 font-medium hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
                         <LogOut className="w-4 h-4" /> Sign Out
                     </button>
                 </div>
@@ -101,7 +112,13 @@ const Layout = () => {
                         <div className="font-medium text-sm text-slate-400 md:ml-0">Overview</div>
                     </div>
                     <div className="flex items-center gap-4">
-                        <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700"></div>
+                        {profile?.company_logo_url ? (
+                            <img src={profile.company_logo_url} alt="Company Logo" className="h-8 max-w-[120px] object-contain" />
+                        ) : profile?.company_name ? (
+                            <div className="text-sm font-bold text-slate-300">{profile.company_name}</div>
+                        ) : (
+                            <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 cursor-pointer" onClick={() => navigate('/profile')}></div>
+                        )}
                     </div>
                 </header>
                 <div className="flex-1 overflow-auto p-8 relative">
