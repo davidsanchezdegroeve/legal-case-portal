@@ -115,6 +115,48 @@ export type Database = {
           },
         ]
       }
+      lawyer_responses: {
+        Row: {
+          id: string
+          request_id: string
+          lawyer_id: string
+          recommendation: string | null
+          arabic_translation: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          request_id: string
+          lawyer_id: string
+          recommendation?: string | null
+          arabic_translation?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          request_id?: string
+          lawyer_id?: string
+          recommendation?: string | null
+          arabic_translation?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lawyer_responses_lawyer_id_fkey"
+            columns: ["lawyer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lawyer_responses_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "legal_dashboard"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       profiles: {
         Row: {
           id: string

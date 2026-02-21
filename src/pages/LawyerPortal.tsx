@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Scale, Briefcase, ChevronRight, PenTool } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LegalRequest {
     id: string;
@@ -13,6 +14,7 @@ interface LegalRequest {
 }
 
 export default function LawyerPortal() {
+    const { user } = useAuth();
 
     const [requests, setRequests] = useState<LegalRequest[]>([]);
     const [activeRequest, setActiveRequest] = useState<string | null>(null);
@@ -21,22 +23,36 @@ export default function LawyerPortal() {
 
     useEffect(() => {
         async function fetchRequests() {
+            if (!user) return;
             try {
-                const { data, error } = await supabase
+                // 1. Fetch all base requests
+                const { data: requestsData, error: reqError } = await supabase
                     .from('legal_dashboard')
                     .select('*')
                     .order('updated_at', { ascending: false });
 
-                if (error) throw error;
-                if (data) {
-                    const mappedRequests = data.map(row => ({
-                        id: row.id,
-                        title: row.my_requests ? (row.my_requests.length > 60 ? row.my_requests.substring(0, 60) + '...' : row.my_requests) : 'Legal Request',
-                        description: row.my_requests || 'No description provided.',
-                        status: (row.lawyer_recommendations ? 'replied' : 'pending') as 'pending' | 'replied',
-                        recommendation: row.lawyer_recommendations || '',
-                        arabic_translation: row.arabic_translation || ''
-                    }));
+                if (reqError) throw reqError;
+
+                // 2. Fetch specific responses for this lawyer
+                const { data: responsesData, error: resError } = await supabase
+                    .from('lawyer_responses')
+                    .select('*')
+                    .eq('lawyer_id', user.id);
+
+                if (resError) throw resError;
+
+                if (requestsData) {
+                    const mappedRequests = requestsData.map(row => {
+                        const myResponse = responsesData?.find(r => r.request_id === row.id);
+                        return {
+                            id: row.id,
+                            title: row.my_requests ? (row.my_requests.length > 60 ? row.my_requests.substring(0, 60) + '...' : row.my_requests) : 'Legal Request',
+                            description: row.my_requests || 'No description provided.',
+                            status: (myResponse ? 'replied' : 'pending') as 'pending' | 'replied',
+                            recommendation: myResponse?.recommendation || '',
+                            arabic_translation: myResponse?.arabic_translation || ''
+                        };
+                    });
                     setRequests(mappedRequests);
                 }
             } catch (err) {
@@ -44,20 +60,41 @@ export default function LawyerPortal() {
             }
         }
         fetchRequests();
-    }, []);
+    }, [user]);
 
     const handleSaveRecommendation = async (reqId: string) => {
+        if (!user) return;
         try {
-            const { error } = await supabase
-                .from('legal_dashboard')
-                .update({
-                    lawyer_recommendations: recommendation,
-                    arabic_translation: recommendationAr,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', reqId);
+            // Check if response exists for this specific lawyer on this request
+            const { data: existing } = await supabase
+                .from('lawyer_responses')
+                .select('id')
+                .eq('request_id', reqId)
+                .eq('lawyer_id', user.id)
+                .single();
 
-            if (error) throw error;
+            if (existing) {
+                const { error } = await supabase
+                    .from('lawyer_responses')
+                    .update({
+                        recommendation: recommendation,
+                        arabic_translation: recommendationAr,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', existing.id);
+                if (error) throw error;
+            } else {
+                const { error } = await supabase
+                    .from('lawyer_responses')
+                    .insert({
+                        request_id: reqId,
+                        lawyer_id: user.id,
+                        recommendation: recommendation,
+                        arabic_translation: recommendationAr,
+                        updated_at: new Date().toISOString()
+                    });
+                if (error) throw error;
+            }
 
             setRequests(reqs => reqs.map(r =>
                 r.id === reqId ? { ...r, recommendation, arabic_translation: recommendationAr, status: 'replied' } : r
