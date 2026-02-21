@@ -25,8 +25,9 @@ const Login = () => {
 
             if (error) throw error;
             navigate('/');
-        } catch (err: any) {
-            setError(err.message || 'Failed to sign in. Please check your credentials.');
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to sign in. Please check your credentials.';
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -43,8 +44,9 @@ const Login = () => {
             });
             if (error) throw error;
             setResetEmailSent(true);
-        } catch (err: any) {
-            setError(err.message || 'Failed to send reset email.');
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to send reset email.';
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
