@@ -236,7 +236,7 @@ export default function EvidenceGallery() {
                                         {doc.category === 'Audio' && <UploadCloud className="w-6 h-6 text-purple-400" />}
                                         {!['Communication', 'Financial', 'Government', 'Audio'].includes(doc.category) && <FileText className="w-6 h-6 text-blue-400" />}
                                     </div>
-                                    <div className="text-[10px] font-bold bg-slate-800 text-text-muted px-2 py-1 rounded uppercase tracking-wider">
+                                    <div className="text-[10px] font-bold bg-bg-surface-hover text-text-main px-2 py-1 rounded uppercase tracking-wider border border-border-default shadow-sm">
                                         {doc.category}
                                     </div>
                                 </div>
@@ -251,10 +251,10 @@ export default function EvidenceGallery() {
                                     <div className="my-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm">
                                         <div className="flex items-center gap-2 mb-2">
                                             <Scale className="w-4 h-4 text-amber-500" />
-                                            <span className="font-semibold text-text-muted">Legal Context</span>
+                                            <span className="font-semibold text-text-main">Legal Context</span>
                                         </div>
-                                        {doc.legal_significance_en && <p className="text-text-muted mb-3">{doc.legal_significance_en}</p>}
-                                        {doc.legal_significance_ar && <p className="text-text-muted font-arabic border-t border-slate-700/50 pt-2" dir="rtl">{doc.legal_significance_ar}</p>}
+                                        {doc.legal_significance_en && <p className="text-text-main mb-3">{doc.legal_significance_en}</p>}
+                                        {doc.legal_significance_ar && <p className="text-text-main font-arabic border-t border-slate-700/50 pt-2" dir="rtl">{doc.legal_significance_ar}</p>}
                                     </div>
                                 )}
 
