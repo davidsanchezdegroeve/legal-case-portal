@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { ShieldCheck, Lock, Download, AlertCircle, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
