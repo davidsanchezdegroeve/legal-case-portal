@@ -163,6 +163,27 @@ export type Database = {
           }
         ]
       }
+      download_logs: {
+        Row: {
+          id: string
+          file_name: string
+          user_agent: string | null
+          downloaded_at: string
+        }
+        Insert: {
+          id?: string
+          file_name: string
+          user_agent?: string | null
+          downloaded_at?: string
+        }
+        Update: {
+          id?: string
+          file_name?: string
+          user_agent?: string | null
+          downloaded_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           id: string

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
 export const dynamic = 'force-dynamic';
-import { Scale, Briefcase, ChevronRight, PenTool, Download } from 'lucide-react';
+import { Scale, Briefcase, ChevronRight, PenTool, Download, Activity } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -25,6 +25,13 @@ interface LegalRequest {
     evidence_files: string[] | null;
 }
 
+interface DownloadLog {
+    id: string;
+    file_name: string;
+    downloaded_at: string;
+    user_agent: string;
+}
+
 export default function LawyerPortal() {
     const { user } = useAuth();
 
@@ -32,6 +39,9 @@ export default function LawyerPortal() {
     const [activeRequest, setActiveRequest] = useState<string | null>(null);
     const [recommendation, setRecommendation] = useState('');
     const [recommendationAr, setRecommendationAr] = useState('');
+
+    const [viewMode, setViewMode] = useState<'requests' | 'logs'>('requests');
+    const [downloadLogs, setDownloadLogs] = useState<DownloadLog[]>([]);
 
     useEffect(() => {
         async function fetchRequests() {
@@ -70,6 +80,20 @@ export default function LawyerPortal() {
                         };
                     });
                     setRequests(mappedRequests);
+                }
+
+                // 3. Fetch download logs
+                const { data: logsData, error: logsError } = await supabase
+                    .from('download_logs')
+                    .select('*')
+                    .order('downloaded_at', { ascending: false })
+                    .limit(50);
+
+                if (logsData) {
+                    setDownloadLogs(logsData as DownloadLog[]);
+                }
+                if (logsError) {
+                    console.error("Error fetching logs:", logsError);
                 }
             } catch (err) {
                 console.error("Error fetching legal requests:", err);
@@ -129,32 +153,69 @@ export default function LawyerPortal() {
         <div className="max-w-6xl mx-auto flex h-[calc(100vh-8rem)] gap-6">
 
             <div className="w-1/3 flex flex-col gap-4">
-                <header className="mb-6 flex flex-col gap-1">
+                <header className="mb-2 flex flex-col gap-4">
                     <p className="text-sm font-medium text-text-muted tracking-wide uppercase">Counsel Actions</p>
-                    <h1 className="text-2xl font-bold text-text-main flex items-center gap-2">
-                        <Briefcase className="w-6 h-6 text-primary" /> My Requests
-                    </h1>
+                    <div className="flex bg-slate-800/50 rounded-lg p-1">
+                        <button
+                            onClick={() => setViewMode('requests')}
+                            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${viewMode === 'requests' ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
+                        >
+                            <Briefcase className="w-4 h-4" /> Requests
+                        </button>
+                        <button
+                            onClick={() => setViewMode('logs')}
+                            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${viewMode === 'logs' ? 'bg-amber-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
+                        >
+                            <Activity className="w-4 h-4" /> Audit Logs
+                        </button>
+                    </div>
                 </header>
 
                 <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-                    {requests.map(req => (
-                        <button
-                            key={req.id}
-                            onClick={() => { setActiveRequest(req.id); setRecommendation(req.recommendation); }}
-                            className={`w-full text-left p-5 rounded-2xl border transition-all ${activeRequest === req.id
-                                ? 'bg-blue-600/10 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.15)] glow'
-                                : 'glass-panel border-slate-700 hover:border-slate-500'
-                                }`}
-                        >
-                            <div className="flex items-center justify-between mb-2">
-                                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${req.status === 'pending' ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30'}`}>
-                                    {req.status}
-                                </span>
-                                <ChevronRight className={`w-4 h-4 ${activeRequest === req.id ? 'text-blue-400' : 'text-text-muted'}`} />
+                    {viewMode === 'requests' ? (
+                        requests.map(req => (
+                            <button
+                                key={req.id}
+                                onClick={() => { setActiveRequest(req.id); setRecommendation(req.recommendation); }}
+                                className={`w-full text-left p-5 rounded-2xl border transition-all ${activeRequest === req.id
+                                    ? 'bg-blue-600/10 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.15)] glow'
+                                    : 'glass-panel border-slate-700 hover:border-slate-500'
+                                    }`}
+                            >
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${req.status === 'pending' ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30'}`}>
+                                        {req.status}
+                                    </span>
+                                    <ChevronRight className={`w-4 h-4 ${activeRequest === req.id ? 'text-blue-400' : 'text-text-muted'}`} />
+                                </div>
+                                <h4 className="text-text-main font-semibold mb-1 line-clamp-2">{req.title}</h4>
+                            </button>
+                        ))
+                    ) : (
+                        downloadLogs.length > 0 ? (
+                            downloadLogs.map(log => (
+                                <div key={log.id} className="w-full text-left p-4 rounded-2xl border glass-panel border-slate-700">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="text-xs text-amber-500 font-bold bg-amber-500/10 px-2 py-1 rounded inline-block">
+                                            {new Date(log.downloaded_at).toLocaleString()}
+                                        </div>
+                                    </div>
+                                    <div className="text-text-main text-sm font-medium mb-1 truncate" title={log.file_name}>
+                                        <Activity className="w-3 h-3 inline mr-1 text-slate-400" />
+                                        {log.file_name}
+                                    </div>
+                                    <div className="text-slate-500 text-[10px] bg-slate-900/50 p-2 rounded mt-2 break-all font-mono">
+                                        {log.user_agent}
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center p-8 text-slate-500 text-sm">
+                                <Activity className="w-8 h-8 opacity-20 mx-auto mb-2" />
+                                No download logs found yet.
                             </div>
-                            <h4 className="text-text-main font-semibold mb-1 line-clamp-2">{req.title}</h4>
-                        </button>
-                    ))}
+                        )
+                    )}
                 </div>
             </div>
 

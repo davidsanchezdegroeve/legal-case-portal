@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Lock, Download, AlertCircle, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function SecureDownload() {
     const [password, setPassword] = useState('');
@@ -110,8 +111,21 @@ export default function SecureDownload() {
                                                 }
                                             };
 
-                                            xhr.onload = () => {
+                                            xhr.onload = async () => {
                                                 if (xhr.status >= 200 && xhr.status < 300) {
+                                                    // Log the successful download
+                                                    try {
+                                                        await supabase
+                                                            .from('download_logs')
+                                                            .insert([
+                                                                {
+                                                                    file_name: fileName,
+                                                                    user_agent: navigator.userAgent
+                                                                }
+                                                            ]);
+                                                    } catch (logErr) {
+                                                        console.error("Failed to log download:", logErr);
+                                                    }
                                                     resolve(xhr.response);
                                                 } else {
                                                     reject(new Error(`HTTP status ${xhr.status}`));
