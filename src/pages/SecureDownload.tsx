@@ -94,7 +94,7 @@ export default function SecureDownload() {
                                     // Using the Supabase client directly forces a proper download stream
                                     // and usually avoids CORS preflight failures compared to simple links
                                     const { data, error } = await supabase.storage
-                                        .from('evidence-vault')
+                                        .from('conf')
                                         .download(fileName);
 
                                     if (error) throw error;
