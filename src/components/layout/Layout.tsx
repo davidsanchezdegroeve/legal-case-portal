@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { LayoutDashboard, Clock, FileBadge, Scale, LogOut, Menu, X, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, Clock, FileBadge, Scale, LogOut, Menu, X, Sun, Moon, Users } from 'lucide-react';
 
 const Layout = () => {
     const { profile, signOut } = useAuth();
@@ -19,6 +19,7 @@ const Layout = () => {
         { path: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" />, label: 'Dashboard' },
         { path: '/timeline', icon: <Clock className="w-5 h-5" />, label: 'Timeline Events' },
         { path: '/evidence', icon: <FileBadge className="w-5 h-5" />, label: 'Evidence Vault' },
+        { path: '/founders', icon: <Users className="w-5 h-5" />, label: 'Founders' },
         { path: '/lawyer', icon: <Scale className="w-5 h-5" />, label: 'Lawyer Portal' },
     ];
 
