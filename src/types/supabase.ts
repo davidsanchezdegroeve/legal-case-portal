@@ -257,7 +257,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_download_count: {
+        Args: {
+          target_file: string
+        }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
