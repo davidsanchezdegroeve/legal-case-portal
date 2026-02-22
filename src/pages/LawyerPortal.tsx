@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Scale, Briefcase, ChevronRight, PenTool } from 'lucide-react';
+import { Scale, Briefcase, ChevronRight, PenTool, Download } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -11,6 +11,7 @@ interface LegalRequest {
     status: 'pending' | 'replied';
     recommendation: string;
     arabic_translation: string;
+    evidence_files: string[];
 }
 
 export default function LawyerPortal() {
@@ -44,13 +45,25 @@ export default function LawyerPortal() {
                 if (requestsData) {
                     const mappedRequests = requestsData.map(row => {
                         const myResponse = responsesData?.find(r => r.request_id === row.id);
+
+                        let files: string[] = [];
+                        if (Array.isArray(row.evidence_files)) {
+                            files = row.evidence_files as string[];
+                        } else if (typeof row.evidence_files === 'string') {
+                            try {
+                                const parsed = JSON.parse(row.evidence_files);
+                                if (Array.isArray(parsed)) files = parsed;
+                            } catch (e) { }
+                        }
+
                         return {
                             id: row.id,
                             title: row.my_requests ? (row.my_requests.length > 60 ? row.my_requests.substring(0, 60) + '...' : row.my_requests) : 'Legal Request',
                             description: row.my_requests || 'No description provided.',
                             status: (myResponse ? 'replied' : 'pending') as 'pending' | 'replied',
                             recommendation: myResponse?.recommendation || '',
-                            arabic_translation: myResponse?.arabic_translation || ''
+                            arabic_translation: myResponse?.arabic_translation || '',
+                            evidence_files: files
                         };
                     });
                     setRequests(mappedRequests);
@@ -155,6 +168,26 @@ export default function LawyerPortal() {
                                         <h4 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Admin Request Context</h4>
                                         <p className="text-text-muted leading-relaxed">{req.description}</p>
                                     </div>
+
+                                    {req.evidence_files && req.evidence_files.length > 0 && (
+                                        <div className="mt-4 bg-bg-surface/80 p-5 rounded-xl border border-slate-800">
+                                            <h4 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-3">Attached Evidence</h4>
+                                            <div className="flex flex-wrap gap-3">
+                                                {req.evidence_files.map((file, idx) => (
+                                                    <a
+                                                        key={idx}
+                                                        href={`https://amsxzshsxqyubutmwfhn.supabase.co/storage/v1/object/public/evidence-vault/${file}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center gap-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 px-4 py-2 rounded-lg border border-blue-500/20 transition-colors text-sm font-medium"
+                                                    >
+                                                        <Download className="w-4 h-4" />
+                                                        {file}
+                                                    </a>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="flex-1 max-h-[500px]">

@@ -19,7 +19,8 @@ export type Database = {
           arabic_translation: string | null
           category: string | null
           created_at: string | null
-          file_url: string
+          file_url: string | null
+          evidence_files: Json | null
           id: string
           original_language: string | null
           title: string
@@ -29,7 +30,8 @@ export type Database = {
           arabic_translation?: string | null
           category?: string | null
           created_at?: string | null
-          file_url: string
+          file_url?: string | null
+          evidence_files?: Json | null
           id?: string
           original_language?: string | null
           title: string
@@ -39,7 +41,8 @@ export type Database = {
           arabic_translation?: string | null
           category?: string | null
           created_at?: string | null
-          file_url?: string
+          file_url?: string | null
+          evidence_files?: Json | null
           id?: string
           original_language?: string | null
           title?: string
@@ -80,6 +83,7 @@ export type Database = {
       legal_dashboard: {
         Row: {
           arabic_translation: string | null
+          evidence_files: Json | null
           id: string
           lawyer_id: string | null
           lawyer_recommendations: string | null
@@ -89,6 +93,7 @@ export type Database = {
         }
         Insert: {
           arabic_translation?: string | null
+          evidence_files?: Json | null
           id?: string
           lawyer_id?: string | null
           lawyer_recommendations?: string | null
@@ -98,6 +103,7 @@ export type Database = {
         }
         Update: {
           arabic_translation?: string | null
+          evidence_files?: Json | null
           id?: string
           lawyer_id?: string | null
           lawyer_recommendations?: string | null

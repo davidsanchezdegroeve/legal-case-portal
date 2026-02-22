@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { UploadCloud, FileText, ExternalLink, ShieldCheck, FileBadge, TrendingUp, MessageSquare, Lock, Folders, Scale, X } from 'lucide-react';
+import { UploadCloud, FileText, ExternalLink, ShieldCheck, FileBadge, TrendingUp, MessageSquare, Lock, Folders, Scale, X, Download } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 
 export interface EvidenceDoc {
@@ -10,6 +10,7 @@ export interface EvidenceDoc {
     description: string;
     category: string;
     file_url: string | null;
+    evidence_files?: string[];
     created_at: string;
     uploaded_by: string;
     verification_code?: string;
@@ -47,7 +48,19 @@ export default function EvidenceGallery() {
                 if (error) throw error;
                 if (data) {
                     // Pre-fetch signed URLs for any highlight snippets
-                    const docsWithSnippets = await Promise.all((data as unknown as EvidenceDoc[]).map(async (doc) => {
+                    const docsWithSnippets = await Promise.all((data as any[]).map(async (row) => {
+                        let files: string[] = [];
+                        if (Array.isArray(row.evidence_files)) {
+                            files = row.evidence_files as string[];
+                        } else if (typeof row.evidence_files === 'string') {
+                            try {
+                                const parsed = JSON.parse(row.evidence_files);
+                                if (Array.isArray(parsed)) files = parsed;
+                            } catch (e) { }
+                        }
+
+                        const doc: EvidenceDoc = { ...row, evidence_files: files };
+
                         if (doc.highlight_snippet_url) {
                             const { data: snippetData } = await supabase.storage
                                 .from('evidence-vault')
@@ -91,6 +104,7 @@ export default function EvidenceGallery() {
                     title,
                     category: 'General',
                     file_url: filePath,
+                    evidence_files: [filePath],
                     verification_code: verificationCode,
                     arabic_translation: titleAr || undefined,
                 }
@@ -307,8 +321,21 @@ export default function EvidenceGallery() {
                                     </div>
                                 )}
 
-                                <div className="mt-auto pt-4">
-                                    {doc.file_url ? (
+                                <div className="mt-auto pt-4 flex flex-col gap-2">
+                                    {doc.evidence_files && doc.evidence_files.length > 0 ? (
+                                        doc.evidence_files.map((file, idx) => (
+                                            <a
+                                                key={idx}
+                                                href={`https://amsxzshsxqyubutmwfhn.supabase.co/storage/v1/object/public/evidence-vault/${file}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="w-full py-2.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-blue-500/20"
+                                            >
+                                                <Download className="w-4 h-4" /> Download {file}
+                                            </a>
+                                        ))
+                                    ) : doc.file_url ? (
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
