@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+
+export const dynamic = 'force-dynamic';
 import { UploadCloud, FileText, ExternalLink, ShieldCheck, FileBadge, TrendingUp, MessageSquare, Lock, Folders, Scale, X, Download } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+
+export const dynamic = 'force-dynamic';
 import { Scale, Briefcase, ChevronRight, PenTool, Download } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 import { useAuth } from '../contexts/AuthContext';
