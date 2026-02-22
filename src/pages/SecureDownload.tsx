@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ShieldCheck, Lock, Download, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Lock, Download, AlertCircle, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function SecureDownload() {
     const [password, setPassword] = useState('');
@@ -10,6 +10,7 @@ export default function SecureDownload() {
     const fileName = "CONFIDENTIAL_EVIDENCE_BUNDLE.zip";
     // This is the hardcoded password
     const securePassword = "legal-access-2025";
+    const [isDownloading, setIsDownloading] = useState(false);
 
     const handleUnlock = (e: React.FormEvent) => {
         e.preventDefault();
@@ -86,15 +87,49 @@ export default function SecureDownload() {
                             <span className="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded text-xs font-bold border border-emerald-500/20">VERIFIED</span>
                         </div>
 
-                        <a
-                            href={`https://amsxzshsxqyubutmwfhn.supabase.co/storage/v1/object/public/evidence-vault/${fileName}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 group"
+                        <button
+                            onClick={async () => {
+                                try {
+                                    setIsDownloading(true);
+                                    // Using the Supabase client directly forces a proper download stream
+                                    // and usually avoids CORS preflight failures compared to simple links
+                                    const { data, error } = await supabase.storage
+                                        .from('evidence-vault')
+                                        .download(fileName);
+
+                                    if (error) throw error;
+
+                                    // Create a blob and simulate a click to force the browser to save it
+                                    const url = URL.createObjectURL(data);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = fileName;
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
+                                    URL.revokeObjectURL(url);
+                                } catch (err) {
+                                    console.error("Download failed:", err);
+                                    alert("There was an error downloading the file. Please check if the file exists in the vault.");
+                                } finally {
+                                    setIsDownloading(false);
+                                }
+                            }}
+                            disabled={isDownloading}
+                            className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 group"
                         >
-                            <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
-                            Download Original Evidence
-                        </a>
+                            {isDownloading ? (
+                                <>
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    Decrypting & Downloading...
+                                </>
+                            ) : (
+                                <>
+                                    <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
+                                    Download Original Evidence
+                                </>
+                            )}
+                        </button>
 
                         <p className="text-xs text-center text-slate-500 mt-4">
                             By downloading this file, you agree to the confidentiality terms of the proceedings.
