@@ -13,6 +13,22 @@ export default function SecureDownload() {
     const securePassword = "legal-access-2025";
     const [isDownloading, setIsDownloading] = useState(false);
     const [downloadProgress, setDownloadProgress] = useState(0);
+    const [downloadCount, setDownloadCount] = useState<number>(0);
+
+    // Fetch the download count on mount
+    React.useEffect(() => {
+        const fetchCount = async () => {
+            try {
+                const { data, error } = await supabase.rpc('get_download_count', { target_file: fileName });
+                if (data !== null && !error) {
+                    setDownloadCount(data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch download count", err);
+            }
+        };
+        fetchCount();
+    }, []);
 
     const handleUnlock = (e: React.FormEvent) => {
         e.preventDefault();
@@ -82,11 +98,22 @@ export default function SecureDownload() {
                 ) : (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="bg-slate-900/50 border border-slate-700 rounded-xl p-4 flex items-center justify-between">
-                            <div className="truncate pr-4">
-                                <p className="text-sm font-medium text-text-main truncate">{fileName}</p>
-                                <p className="text-xs text-text-muted mt-1">Encrypted Evidence Package</p>
+                            <div className="truncate pr-4 flex-1">
+                                <p className="text-sm font-medium text-text-main truncate" title={fileName}>{fileName}</p>
+                                <div className="flex items-center gap-3 mt-1 text-xs text-slate-400">
+                                    <span className="flex items-center gap-1">
+                                        <AlertCircle className="w-3 h-3 text-amber-500" />
+                                        30.1 MB
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                        <Download className="w-3 h-3 text-blue-400" />
+                                        {downloadCount} downloads
+                                    </span>
+                                </div>
                             </div>
-                            <span className="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded text-xs font-bold border border-emerald-500/20">VERIFIED</span>
+                            <span className="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded text-[10px] uppercase font-bold border border-emerald-500/20 shrink-0 tracking-wider">
+                                Verified
+                            </span>
                         </div>
 
                         <div className="relative w-full">
@@ -115,7 +142,7 @@ export default function SecureDownload() {
                                                 if (xhr.status >= 200 && xhr.status < 300) {
                                                     // Log the successful download
                                                     try {
-                                                        await supabase
+                                                        const { error: logError } = await supabase
                                                             .from('download_logs')
                                                             .insert([
                                                                 {
@@ -123,6 +150,10 @@ export default function SecureDownload() {
                                                                     user_agent: navigator.userAgent
                                                                 }
                                                             ]);
+                                                        // Optimistically update the UI counter
+                                                        if (!logError) {
+                                                            setDownloadCount(prev => prev + 1);
+                                                        }
                                                     } catch (logErr) {
                                                         console.error("Failed to log download:", logErr);
                                                     }
