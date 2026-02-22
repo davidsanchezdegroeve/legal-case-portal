@@ -21,7 +21,7 @@ export interface EvidenceDoc {
     description: string;
     category: string;
     file_url: string | null;
-    evidence_files?: unknown;
+    evidence_files: string[] | null;
     created_at: string;
     uploaded_by: string;
     verification_code?: string;
@@ -53,8 +53,10 @@ export default function EvidenceGallery() {
             try {
                 const { data, error } = await supabase
                     .from('evidence_vault')
-                    .select('*')
+                    .select('*, evidence_files')
                     .order('created_at', { ascending: false });
+
+                console.log("DATA_DEBUG:", data);
 
                 if (error) throw error;
                 if (data) {

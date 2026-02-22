@@ -22,7 +22,7 @@ interface LegalRequest {
     status: 'pending' | 'replied';
     recommendation: string;
     arabic_translation: string;
-    evidence_files: unknown;
+    evidence_files: string[] | null;
 }
 
 export default function LawyerPortal() {
@@ -40,8 +40,10 @@ export default function LawyerPortal() {
                 // 1. Fetch all base requests
                 const { data: requestsData, error: reqError } = await supabase
                     .from('legal_dashboard')
-                    .select('*')
+                    .select('*, evidence_files')
                     .order('updated_at', { ascending: false });
+
+                console.log("DATA_DEBUG:", requestsData);
 
                 if (reqError) throw reqError;
 
@@ -64,7 +66,7 @@ export default function LawyerPortal() {
                             status: (myResponse ? 'replied' : 'pending') as 'pending' | 'replied',
                             recommendation: myResponse?.recommendation || '',
                             arabic_translation: myResponse?.arabic_translation || '',
-                            evidence_files: row.evidence_files
+                            evidence_files: row.evidence_files as unknown as string[] | null
                         };
                     });
                     setRequests(mappedRequests);
