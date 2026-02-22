@@ -4,13 +4,22 @@ import { useAuth } from '../contexts/AuthContext';
 import { UploadCloud, FileText, ExternalLink, ShieldCheck, FileBadge, TrendingUp, MessageSquare, Lock, Folders, Scale, X, Download } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 
+const parseFiles = (filesData: unknown): string[] => {
+    if (!filesData) return [];
+    if (Array.isArray(filesData)) return filesData as string[];
+    if (typeof filesData === 'string') {
+        try { return JSON.parse(filesData); } catch { return []; }
+    }
+    return [];
+};
+
 export interface EvidenceDoc {
     id: string;
     title: string;
     description: string;
     category: string;
     file_url: string | null;
-    evidence_files?: string[];
+    evidence_files?: unknown;
     created_at: string;
     uploaded_by: string;
     verification_code?: string;
@@ -48,18 +57,8 @@ export default function EvidenceGallery() {
                 if (error) throw error;
                 if (data) {
                     // Pre-fetch signed URLs for any highlight snippets
-                    const docsWithSnippets = await Promise.all((data as EvidenceDoc[]).map(async (row) => {
-                        let files: string[] = [];
-                        if (Array.isArray(row.evidence_files)) {
-                            files = row.evidence_files as string[];
-                        } else if (typeof row.evidence_files === 'string') {
-                            try {
-                                const parsed = JSON.parse(row.evidence_files);
-                                if (Array.isArray(parsed)) files = parsed;
-                            } catch { /* ignore */ }
-                        }
-
-                        const doc: EvidenceDoc = { ...row, evidence_files: files };
+                    const docsWithSnippets = await Promise.all((data as unknown as EvidenceDoc[]).map(async (row) => {
+                        const doc: EvidenceDoc = { ...row };
 
                         if (doc.highlight_snippet_url) {
                             const { data: snippetData } = await supabase.storage
@@ -220,144 +219,148 @@ export default function EvidenceGallery() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {documents.map((doc) => (
-                        <div
-                            key={doc.id}
-                            className="glass-panel rounded-2xl flex flex-col h-full group border border-slate-800 hover:border-slate-700 transition overflow-hidden cursor-pointer"
-                            onClick={() => setSelectedEvidence(doc)}
-                        >
+                    {documents.map((doc) => {
+                        console.log('Fila actual (Vault):', doc);
+                        const parsedFiles = parseFiles(doc.evidence_files);
+                        return (
+                            <div
+                                key={doc.id}
+                                className="glass-panel rounded-2xl flex flex-col h-full group border border-slate-800 hover:border-slate-700 transition overflow-hidden cursor-pointer"
+                                onClick={() => setSelectedEvidence(doc)}
+                            >
 
-                            {/* Hero Image Snippet */}
-                            {doc._snippetSignedUrl ? (
-                                <div className="w-full h-48 bg-slate-900 border-b border-slate-800 relative">
-                                    <img
-                                        src={doc._snippetSignedUrl}
-                                        alt={`Highlight for ${doc.title}`}
-                                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#151822] to-transparent"></div>
-                                </div>
-                            ) : (
-                                <div className="h-4"></div> // Top padding if no image
-                            )}
-
-                            <div className="p-5 flex flex-col flex-1">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                                        {doc.category === 'Communication' && <MessageSquare className="w-6 h-6 text-blue-400" />}
-                                        {doc.category === 'Financial' && <TrendingUp className="w-6 h-6 text-amber-400" />}
-                                        {doc.category === 'Government' && <FileText className="w-6 h-6 text-emerald-400" />}
-                                        {doc.category === 'Audio' && <UploadCloud className="w-6 h-6 text-purple-400" />}
-                                        {!['Communication', 'Financial', 'Government', 'Audio'].includes(doc.category) && <FileText className="w-6 h-6 text-blue-400" />}
+                                {/* Hero Image Snippet */}
+                                {doc._snippetSignedUrl ? (
+                                    <div className="w-full h-48 bg-slate-900 border-b border-slate-800 relative">
+                                        <img
+                                            src={doc._snippetSignedUrl}
+                                            alt={`Highlight for ${doc.title}`}
+                                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[#151822] to-transparent"></div>
                                     </div>
-                                    <div className="text-[10px] font-bold bg-bg-surface-hover text-text-main px-2 py-1 rounded uppercase tracking-wider border border-border-default shadow-sm">
-                                        {doc.category}
-                                    </div>
-                                </div>
-
-                                <h4 className="text-lg font-bold text-text-main mb-2 leading-tight">
-                                    {doc.title}
-                                </h4>
-                                <p className="text-xs text-text-muted font-arabic mb-4 line-clamp-2" dir="rtl">{doc.arabic_translation}</p>
-
-                                {/* Bilingual Legal Significance */}
-                                {(doc.legal_significance_en || doc.legal_significance_ar) && (
-                                    <div className="my-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <Scale className="w-4 h-4 text-amber-500" />
-                                            <span className="font-semibold text-text-main">Legal Context</span>
-                                        </div>
-                                        {doc.legal_significance_en && <p className="text-text-main mb-3">{doc.legal_significance_en}</p>}
-                                        {doc.legal_significance_ar && <p className="text-text-main font-arabic border-t border-slate-700/50 pt-2" dir="rtl">{doc.legal_significance_ar}</p>}
-                                    </div>
+                                ) : (
+                                    <div className="h-4"></div> // Top padding if no image
                                 )}
 
-                                {/* Special CSV UI Callout */}
-                                {(doc.title.includes('CSV') || doc.file_url?.endsWith('.csv')) && (
-                                    <div className="my-4 border border-rose-500/30 rounded-xl overflow-hidden bg-rose-500/5">
-                                        <div className="bg-rose-500/20 px-3 py-2 border-b border-rose-500/30 flex justify-between items-center">
-                                            <span className="text-xs font-bold text-rose-400 uppercase tracking-wider">Key Audit Findings</span>
-                                            <span className="text-[10px] text-rose-500">Extracted from source</span>
+                                <div className="p-5 flex flex-col flex-1">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                                            {doc.category === 'Communication' && <MessageSquare className="w-6 h-6 text-blue-400" />}
+                                            {doc.category === 'Financial' && <TrendingUp className="w-6 h-6 text-amber-400" />}
+                                            {doc.category === 'Government' && <FileText className="w-6 h-6 text-emerald-400" />}
+                                            {doc.category === 'Audio' && <UploadCloud className="w-6 h-6 text-purple-400" />}
+                                            {!['Communication', 'Financial', 'Government', 'Audio'].includes(doc.category) && <FileText className="w-6 h-6 text-blue-400" />}
                                         </div>
-                                        <div className="p-3">
-                                            <table className="w-full text-xs text-left text-text-muted">
-                                                <thead>
-                                                    <tr className="border-b border-rose-500/20 text-rose-400">
-                                                        <th className="font-medium pb-2 w-20">Date</th>
-                                                        <th className="font-medium pb-2">Log Entry</th>
-                                                        <th className="font-medium pb-2 text-right">Status</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-slate-800/50">
-                                                    <tr>
-                                                        <td className="py-2 text-text-muted">Jan 15</td>
-                                                        <td className="py-2">Funds Transfer Initiated</td>
-                                                        <td className="py-2 text-right text-emerald-400">Cleared</td>
-                                                    </tr>
-                                                    <tr className="bg-rose-500/10">
-                                                        <td className="py-2 text-rose-300 font-medium">Feb 12</td>
-                                                        <td className="py-2 text-rose-300 font-medium">Partnership Dissolution Notice</td>
-                                                        <td className="py-2 text-right text-rose-400 font-bold">Executed</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className="py-2 text-text-muted">Mar 01</td>
-                                                        <td className="py-2">Account Frozen</td>
-                                                        <td className="py-2 text-right text-amber-400">Pending</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                        <div className="text-[10px] font-bold bg-bg-surface-hover text-text-main px-2 py-1 rounded uppercase tracking-wider border border-border-default shadow-sm">
+                                            {doc.category}
                                         </div>
                                     </div>
-                                )}
 
-                                {/* Evidence Integrity Banner */}
-                                {doc.verification_code && (
-                                    <div className="mt-auto bg-bg-surface p-3 rounded-xl border border-emerald-500/20 flex items-center justify-between mb-4 mt-4">
-                                        <div className="flex items-center gap-2">
-                                            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                                            <span className="text-xs text-emerald-500 font-medium">Verified Gov Document</span>
+                                    <h4 className="text-lg font-bold text-text-main mb-2 leading-tight">
+                                        {doc.title}
+                                    </h4>
+                                    <p className="text-xs text-text-muted font-arabic mb-4 line-clamp-2" dir="rtl">{doc.arabic_translation}</p>
+
+                                    {/* Bilingual Legal Significance */}
+                                    {(doc.legal_significance_en || doc.legal_significance_ar) && (
+                                        <div className="my-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <Scale className="w-4 h-4 text-amber-500" />
+                                                <span className="font-semibold text-text-main">Legal Context</span>
+                                            </div>
+                                            {doc.legal_significance_en && <p className="text-text-main mb-3">{doc.legal_significance_en}</p>}
+                                            {doc.legal_significance_ar && <p className="text-text-main font-arabic border-t border-slate-700/50 pt-2" dir="rtl">{doc.legal_significance_ar}</p>}
                                         </div>
-                                        <span className="text-xs text-text-muted font-mono">CODE: {doc.verification_code}</span>
-                                    </div>
-                                )}
-
-                                <div className="mt-auto pt-4 flex flex-col gap-2">
-                                    {doc.evidence_files && Array.isArray(doc.evidence_files) && doc.evidence_files.length > 0 ? (
-                                        doc.evidence_files.map((fileName, index) => (
-                                            <a
-                                                key={index}
-                                                href={`https://amsxzshsxqyubutmwfhn.supabase.co/storage/v1/object/public/evidence-vault/${fileName}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                onClick={(e) => e.stopPropagation()}
-                                                className="w-full py-2.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-blue-500/20"
-                                            >
-                                                <Download className="w-4 h-4" /> Ver {fileName}
-                                            </a>
-                                        ))
-                                    ) : doc.file_url ? (
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleViewDocument(doc.file_url!);
-                                            }}
-                                            className="w-full py-2.5 bg-bg-surface hover:bg-slate-800 text-text-main justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-slate-800 hover:border-slate-700"
-                                        >
-                                            <ExternalLink className="w-4 h-4" /> View Original Document
-                                        </button>
-                                    ) : (
-                                        <button
-                                            disabled
-                                            onClick={(e) => e.stopPropagation()}
-                                            className="w-full py-2.5 bg-bg-surface/50 text-text-muted justify-center rounded-xl flex items-center gap-2 text-sm font-medium border border-slate-800/50 cursor-not-allowed"
-                                        >
-                                            <Lock className="w-4 h-4" /> Offline Evidence
-                                        </button>
                                     )}
+
+                                    {/* Special CSV UI Callout */}
+                                    {(doc.title.includes('CSV') || doc.file_url?.endsWith('.csv')) && (
+                                        <div className="my-4 border border-rose-500/30 rounded-xl overflow-hidden bg-rose-500/5">
+                                            <div className="bg-rose-500/20 px-3 py-2 border-b border-rose-500/30 flex justify-between items-center">
+                                                <span className="text-xs font-bold text-rose-400 uppercase tracking-wider">Key Audit Findings</span>
+                                                <span className="text-[10px] text-rose-500">Extracted from source</span>
+                                            </div>
+                                            <div className="p-3">
+                                                <table className="w-full text-xs text-left text-text-muted">
+                                                    <thead>
+                                                        <tr className="border-b border-rose-500/20 text-rose-400">
+                                                            <th className="font-medium pb-2 w-20">Date</th>
+                                                            <th className="font-medium pb-2">Log Entry</th>
+                                                            <th className="font-medium pb-2 text-right">Status</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-slate-800/50">
+                                                        <tr>
+                                                            <td className="py-2 text-text-muted">Jan 15</td>
+                                                            <td className="py-2">Funds Transfer Initiated</td>
+                                                            <td className="py-2 text-right text-emerald-400">Cleared</td>
+                                                        </tr>
+                                                        <tr className="bg-rose-500/10">
+                                                            <td className="py-2 text-rose-300 font-medium">Feb 12</td>
+                                                            <td className="py-2 text-rose-300 font-medium">Partnership Dissolution Notice</td>
+                                                            <td className="py-2 text-right text-rose-400 font-bold">Executed</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className="py-2 text-text-muted">Mar 01</td>
+                                                            <td className="py-2">Account Frozen</td>
+                                                            <td className="py-2 text-right text-amber-400">Pending</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Evidence Integrity Banner */}
+                                    {doc.verification_code && (
+                                        <div className="mt-auto bg-bg-surface p-3 rounded-xl border border-emerald-500/20 flex items-center justify-between mb-4 mt-4">
+                                            <div className="flex items-center gap-2">
+                                                <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                                                <span className="text-xs text-emerald-500 font-medium">Verified Gov Document</span>
+                                            </div>
+                                            <span className="text-xs text-text-muted font-mono">CODE: {doc.verification_code}</span>
+                                        </div>
+                                    )}
+
+                                    <div className="mt-auto pt-4 flex flex-col gap-2">
+                                        {parsedFiles.length > 0 ? (
+                                            parsedFiles.map((fileName: string, index: number) => (
+                                                <a
+                                                    key={index}
+                                                    href={`https://amsxzshsxqyubutmwfhn.supabase.co/storage/v1/object/public/evidence-vault/${fileName}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="w-full py-2.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-blue-500/20"
+                                                >
+                                                    <Download className="w-4 h-4" /> Ver {fileName}
+                                                </a>
+                                            ))
+                                        ) : doc.file_url ? (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleViewDocument(doc.file_url!);
+                                                }}
+                                                className="w-full py-2.5 bg-bg-surface hover:bg-slate-800 text-text-main justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-slate-800 hover:border-slate-700"
+                                            >
+                                                <ExternalLink className="w-4 h-4" /> View Original Document
+                                            </button>
+                                        ) : (
+                                            <button
+                                                disabled
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="w-full py-2.5 bg-bg-surface/50 text-text-muted justify-center rounded-xl flex items-center gap-2 text-sm font-medium border border-slate-800/50 cursor-not-allowed"
+                                            >
+                                                <Lock className="w-4 h-4" /> Offline Evidence
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        )
+                    })}
                 </div>
             )}
 

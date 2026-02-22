@@ -4,6 +4,15 @@ import { Scale, Briefcase, ChevronRight, PenTool, Download } from 'lucide-react'
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 import { useAuth } from '../contexts/AuthContext';
 
+const parseFiles = (filesData: unknown): string[] => {
+    if (!filesData) return [];
+    if (Array.isArray(filesData)) return filesData as string[];
+    if (typeof filesData === 'string') {
+        try { return JSON.parse(filesData); } catch { return []; }
+    }
+    return [];
+};
+
 interface LegalRequest {
     id: string;
     title: string;
@@ -11,7 +20,7 @@ interface LegalRequest {
     status: 'pending' | 'replied';
     recommendation: string;
     arabic_translation: string;
-    evidence_files: string[];
+    evidence_files: unknown;
 }
 
 export default function LawyerPortal() {
@@ -46,18 +55,6 @@ export default function LawyerPortal() {
                     const mappedRequests = requestsData.map(row => {
                         const myResponse = responsesData?.find(r => r.request_id === row.id);
 
-                        let files: string[] = [];
-                        if (Array.isArray(row.evidence_files)) {
-                            files = row.evidence_files as string[];
-                        } else if (typeof row.evidence_files === 'string') {
-                            try {
-                                const parsed = JSON.parse(row.evidence_files);
-                                if (Array.isArray(parsed)) files = parsed;
-                            } catch {
-                                // ignore parse error
-                            }
-                        }
-
                         return {
                             id: row.id,
                             title: row.my_requests ? (row.my_requests.length > 60 ? row.my_requests.substring(0, 60) + '...' : row.my_requests) : 'Legal Request',
@@ -65,7 +62,7 @@ export default function LawyerPortal() {
                             status: (myResponse ? 'replied' : 'pending') as 'pending' | 'replied',
                             recommendation: myResponse?.recommendation || '',
                             arabic_translation: myResponse?.arabic_translation || '',
-                            evidence_files: files
+                            evidence_files: row.evidence_files
                         };
                     });
                     setRequests(mappedRequests);
@@ -162,64 +159,68 @@ export default function LawyerPortal() {
 
                 {activeRequest ? (
                     <>
-                        {requests.filter(r => r.id === activeRequest).map(req => (
-                            <div key={req.id} className="h-full flex flex-col">
-                                <div className="mb-8">
-                                    <h2 className="text-2xl font-bold text-text-main mb-4">{req.title}</h2>
-                                    <div className="bg-bg-surface/80 p-5 rounded-xl border border-slate-800">
-                                        <h4 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Admin Request Context</h4>
-                                        <p className="text-text-muted leading-relaxed">{req.description}</p>
+                        {requests.filter(r => r.id === activeRequest).map(req => {
+                            console.log('Fila actual:', req);
+                            const parsedFiles = parseFiles(req.evidence_files);
+                            return (
+                                <div key={req.id} className="h-full flex flex-col">
+                                    <div className="mb-8">
+                                        <h2 className="text-2xl font-bold text-text-main mb-4">{req.title}</h2>
+                                        <div className="bg-bg-surface/80 p-5 rounded-xl border border-slate-800">
+                                            <h4 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Admin Request Context</h4>
+                                            <p className="text-text-muted leading-relaxed">{req.description}</p>
+                                        </div>
+
+                                        {parsedFiles.length > 0 && (
+                                            <div className="mt-4 bg-bg-surface/80 p-5 rounded-xl border border-slate-800">
+                                                <h4 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-3">Attached Evidence</h4>
+                                                <div className="flex flex-wrap gap-3">
+                                                    {parsedFiles.map((fileName: string, index: number) => (
+                                                        <a
+                                                            key={index}
+                                                            href={`https://amsxzshsxqyubutmwfhn.supabase.co/storage/v1/object/public/evidence-vault/${fileName}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center gap-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 px-4 py-2 rounded-lg border border-blue-500/20 transition-colors text-sm font-medium"
+                                                        >
+                                                            <Download className="w-4 h-4" />
+                                                            Ver {fileName}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {req.evidence_files && Array.isArray(req.evidence_files) && req.evidence_files.length > 0 && (
-                                        <div className="mt-4 bg-bg-surface/80 p-5 rounded-xl border border-slate-800">
-                                            <h4 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-3">Attached Evidence</h4>
-                                            <div className="flex flex-wrap gap-3">
-                                                {req.evidence_files.map((fileName, index) => (
-                                                    <a
-                                                        key={index}
-                                                        href={`https://amsxzshsxqyubutmwfhn.supabase.co/storage/v1/object/public/evidence-vault/${fileName}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center gap-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 px-4 py-2 rounded-lg border border-blue-500/20 transition-colors text-sm font-medium"
-                                                    >
-                                                        <Download className="w-4 h-4" />
-                                                        Ver {fileName}
-                                                    </a>
-                                                ))}
+                                    <div className="flex-1 max-h-[500px]">
+                                        <h3 className="text-lg font-semibold text-text-main mb-4 flex items-center gap-2">
+                                            <PenTool className="w-5 h-5 text-amber-500" /> Counsel Recommendation
+                                        </h3>
+
+                                        {/* If they are an Admin, they should only view it maybe, or read-only. For now we assume a Lawyer is using this to type it. */}
+                                        <div className="bg-bg-surface p-6 rounded-2xl border border-slate-800">
+                                            <DualLanguageInput
+                                                label="Type your legal recommendation"
+                                                value={recommendation}
+                                                onChange={setRecommendation}
+                                                onTranslated={setRecommendationAr}
+                                                placeholder="State your advice based on Saudi Labor Law & Fiduciary Duty..."
+                                                isTextArea
+                                            />
+                                            <div className="mt-4 flex justify-end">
+                                                <button
+                                                    onClick={() => handleSaveRecommendation(req.id)}
+                                                    className="bg-primary hover:bg-primary-hover text-white font-medium px-6 py-2.5 rounded-xl transition-colors shadow-lg shadow-primary/20 flex items-center gap-2"
+                                                >
+                                                    Submit Counsel
+                                                    <Scale className="w-4 h-4" />
+                                                </button>
                                             </div>
                                         </div>
-                                    )}
-                                </div>
-
-                                <div className="flex-1 max-h-[500px]">
-                                    <h3 className="text-lg font-semibold text-text-main mb-4 flex items-center gap-2">
-                                        <PenTool className="w-5 h-5 text-amber-500" /> Counsel Recommendation
-                                    </h3>
-
-                                    {/* If they are an Admin, they should only view it maybe, or read-only. For now we assume a Lawyer is using this to type it. */}
-                                    <div className="bg-bg-surface p-6 rounded-2xl border border-slate-800">
-                                        <DualLanguageInput
-                                            label="Type your legal recommendation"
-                                            value={recommendation}
-                                            onChange={setRecommendation}
-                                            onTranslated={setRecommendationAr}
-                                            placeholder="State your advice based on Saudi Labor Law & Fiduciary Duty..."
-                                            isTextArea
-                                        />
-                                        <div className="mt-4 flex justify-end">
-                                            <button
-                                                onClick={() => handleSaveRecommendation(req.id)}
-                                                className="bg-primary hover:bg-primary-hover text-white font-medium px-6 py-2.5 rounded-xl transition-colors shadow-lg shadow-primary/20 flex items-center gap-2"
-                                            >
-                                                Submit Counsel
-                                                <Scale className="w-4 h-4" />
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </>
                 ) : (
                     <div className="h-full flex flex-col items-center justify-center text-center text-text-muted">
