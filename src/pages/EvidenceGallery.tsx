@@ -48,7 +48,7 @@ export default function EvidenceGallery() {
                 if (error) throw error;
                 if (data) {
                     // Pre-fetch signed URLs for any highlight snippets
-                    const docsWithSnippets = await Promise.all((data as any[]).map(async (row) => {
+                    const docsWithSnippets = await Promise.all((data as EvidenceDoc[]).map(async (row) => {
                         let files: string[] = [];
                         if (Array.isArray(row.evidence_files)) {
                             files = row.evidence_files as string[];
@@ -56,7 +56,7 @@ export default function EvidenceGallery() {
                             try {
                                 const parsed = JSON.parse(row.evidence_files);
                                 if (Array.isArray(parsed)) files = parsed;
-                            } catch (e) { }
+                            } catch { /* ignore */ }
                         }
 
                         const doc: EvidenceDoc = { ...row, evidence_files: files };

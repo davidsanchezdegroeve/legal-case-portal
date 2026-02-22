@@ -53,7 +53,9 @@ export default function LawyerPortal() {
                             try {
                                 const parsed = JSON.parse(row.evidence_files);
                                 if (Array.isArray(parsed)) files = parsed;
-                            } catch (e) { }
+                            } catch {
+                                // ignore parse error
+                            }
                         }
 
                         return {
