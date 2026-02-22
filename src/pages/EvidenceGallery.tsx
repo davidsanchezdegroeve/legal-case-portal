@@ -322,17 +322,17 @@ export default function EvidenceGallery() {
                                 )}
 
                                 <div className="mt-auto pt-4 flex flex-col gap-2">
-                                    {doc.evidence_files && doc.evidence_files.length > 0 ? (
-                                        doc.evidence_files.map((file, idx) => (
+                                    {doc.evidence_files && Array.isArray(doc.evidence_files) && doc.evidence_files.length > 0 ? (
+                                        doc.evidence_files.map((fileName, index) => (
                                             <a
-                                                key={idx}
-                                                href={`https://amsxzshsxqyubutmwfhn.supabase.co/storage/v1/object/public/evidence-vault/${file}`}
+                                                key={index}
+                                                href={`https://amsxzshsxqyubutmwfhn.supabase.co/storage/v1/object/public/evidence-vault/${fileName}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 onClick={(e) => e.stopPropagation()}
                                                 className="w-full py-2.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-blue-500/20"
                                             >
-                                                <Download className="w-4 h-4" /> Download {file}
+                                                <Download className="w-4 h-4" /> Ver {fileName}
                                             </a>
                                         ))
                                     ) : doc.file_url ? (

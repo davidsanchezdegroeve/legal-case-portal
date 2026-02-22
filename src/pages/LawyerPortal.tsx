@@ -169,20 +169,20 @@ export default function LawyerPortal() {
                                         <p className="text-text-muted leading-relaxed">{req.description}</p>
                                     </div>
 
-                                    {req.evidence_files && req.evidence_files.length > 0 && (
+                                    {req.evidence_files && Array.isArray(req.evidence_files) && req.evidence_files.length > 0 && (
                                         <div className="mt-4 bg-bg-surface/80 p-5 rounded-xl border border-slate-800">
                                             <h4 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-3">Attached Evidence</h4>
                                             <div className="flex flex-wrap gap-3">
-                                                {req.evidence_files.map((file, idx) => (
+                                                {req.evidence_files.map((fileName, index) => (
                                                     <a
-                                                        key={idx}
-                                                        href={`https://amsxzshsxqyubutmwfhn.supabase.co/storage/v1/object/public/evidence-vault/${file}`}
+                                                        key={index}
+                                                        href={`https://amsxzshsxqyubutmwfhn.supabase.co/storage/v1/object/public/evidence-vault/${fileName}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="flex items-center gap-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 px-4 py-2 rounded-lg border border-blue-500/20 transition-colors text-sm font-medium"
                                                     >
                                                         <Download className="w-4 h-4" />
-                                                        {file}
+                                                        Ver {fileName}
                                                     </a>
                                                 ))}
                                             </div>
