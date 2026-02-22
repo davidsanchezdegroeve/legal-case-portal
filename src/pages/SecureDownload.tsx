@@ -7,7 +7,7 @@ export default function SecureDownload() {
     const [isUnlocked, setIsUnlocked] = useState(false);
 
     // This is the file name in the Supabase bucket
-    const fileName = "ARCHIVO_CONFIDENCIAL_AQUI.pdf";
+    const fileName = "CONFIDENTIAL_EVIDENCE_BUNDLE.zip";
     // This is the hardcoded password
     const securePassword = "legal-access-2025";
 
