@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Elite Legal Case Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#0a0c10",
+                        "accent-amber": "#f59e0b",
+                        "accent-neon": "#00f2ff",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-sidebar {
+            background: rgba(10, 12, 16, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .neon-border-amber {
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+        .neon-glow-primary {
+            box-shadow: 0 0 20px rgba(19, 127, 236, 0.3);
+        }
+        .gradient-mesh {
+            background-color: #0a0c10;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(19, 127, 236, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 242, 255, 0.05) 0px, transparent 50%);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display overflow-hidden">
+<div class="flex h-screen w-full gradient-mesh">
+<!-- Sidebar Navigation -->
+<aside class="glass-sidebar w-72 flex flex-col p-6 z-20">
+<div class="flex items-center gap-3 mb-12">
+<div class="bg-primary rounded-lg p-2 flex items-center justify-center neon-glow-primary">
+<span class="material-symbols-outlined text-white text-2xl">gavel</span>
+</div>
+<div>
+<h1 class="text-xl font-extrabold tracking-tight text-slate-100">ELITE LEGAL</h1>
+<p class="text-[10px] uppercase tracking-[0.2em] text-primary font-bold">Case Portal v2.0</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2 flex-1">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg bg-primary/10 border border-primary/20 text-primary" href="#">
+<span class="material-symbols-outlined fill-1">dashboard</span>
+<span class="font-semibold text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5 transition-all text-slate-400 hover:text-slate-100" href="#">
+<span class="material-symbols-outlined">timeline</span>
+<span class="font-medium text-sm">Timeline Events</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5 transition-all text-slate-400 hover:text-slate-100" href="#">
+<span class="material-symbols-outlined">encrypted</span>
+<span class="font-medium text-sm">Evidence Vault</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-white/5 transition-all text-slate-400 hover:text-slate-100" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-medium text-sm">Lawyer Portal</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-white/5">
+<div class="flex items-center gap-3 p-2 rounded-xl glass-card">
+<img class="size-10 rounded-lg object-cover" data-alt="Profile portrait of a professional lawyer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCU8rjMBCIK7USrrQdKdSCFRNjWYvaahLTyZ1UKM6vUaZiMicw2WnX_Ut697k8LjRdip8QZt5DM6ZEnOVWD45tgx7gHPxlUVhuxYQoI34XU3Yvxl7AMD-tzugclyLWdTBYGM0slOSxpN6GTVj5LtnsSgbMTIPB_PZ6wIOzUPkQcuypnjsaeNvstdt4u7KpPOGuYYLVxv8kuZMRur4i3dKKpWUemTyfyC6GsG1Fv0jmzcKiRMdzSalRN6agfh5S4gcO4YluuOhXPatc"/>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-bold truncate">Senior Partner</p>
+<p class="text-[10px] text-slate-500 truncate">Julian Vane, Esq.</p>
+</div>
+<span class="material-symbols-outlined text-slate-500 text-sm">settings</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex overflow-hidden">
+<div class="flex-1 flex flex-col p-8 overflow-y-auto custom-scrollbar">
+<!-- Header -->
+<header class="flex justify-between items-end mb-8">
+<div>
+<h2 class="text-3xl font-black text-slate-100 tracking-tight">Case Dashboard</h2>
+<p class="text-slate-400 text-sm">Case #294-B: Global Logistics vs. Sovereign Trust</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex -space-x-3">
+<img class="size-8 rounded-full border-2 border-background-dark" data-alt="Avatar of legal team member" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBt2mVmZPAkompXhJ216SzBw-Zfqghcq0bLnx8Bxl8deOdn3MdqIfc8baOABxGJXvRWgapTG1BFQmBvTEBNY6oftm4avStL9W7R5YjaesmBg4OxMAgxP6bokDnaUsfpevzaVvkKs9JPZ_WKzYEK-rm3vv7mxmWu30hLY1TWGX9PbZf4irx83FTW3wx-U3xEYRfq7RBLonBCzIuH0Tz8HBuXa6emg9EcAvGsoLMXu-D4aXQoVyTaLtvrZRyG_Erb4l44RXphuFVhYs"/>
+<img class="size-8 rounded-full border-2 border-background-dark" data-alt="Avatar of legal team member" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCddmBYcfnq38r-1vfWf3T8nZHR9k74i5W9hjTpn4Zxqu12fpEkKr787r2dmmDGfXiCZMNq0TnG4zb0uEcUT4gIXaII4KmxFnzkhjtLz9tmXRVpCLdZePQiCdQAh5-j6kL6A-EHTOk0nV2CAbtsHcUkO1P3xogtRUgYXwHnmQQYQo7V9d-2u5cmUayhrtUGbMNJ83q4meOHlwxkz7ZckHyNRJlTiJIul7EyvGA8boZIaCPbE4KR7MjfWsKFKcE72WjJ4zmC1fvpJDw"/>
+<div class="size-8 rounded-full border-2 border-background-dark bg-slate-800 flex items-center justify-center text-[10px] font-bold">+4</div>
+</div>
+<button class="bg-primary/10 text-primary px-4 py-2 rounded-lg font-bold text-xs border border-primary/20 hover:bg-primary/20 transition-all">
+                            SHARE REPORT
+                        </button>
+</div>
+</header>
+<!-- Top Alert Card (Economic Duress) -->
+<div class="glass-card neon-border-amber rounded-xl p-6 mb-8 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[120px] text-accent-amber">warning</span>
+</div>
+<div class="flex flex-col md:flex-row gap-6 items-center">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-accent-amber fill-1 text-xl">report_problem</span>
+<span class="text-accent-amber font-black text-xs uppercase tracking-widest">Critical Threat Detected</span>
+</div>
+<h3 class="text-2xl font-bold text-slate-100 mb-2 italic">Economic Duress Alert</h3>
+<p class="text-slate-400 text-sm leading-relaxed max-w-2xl">
+                                Financial coercion patterns identified in the defendant's latest liquidation filings. Cross-referencing with forensic audits indicates a 92% probability of non-voluntary asset transfer. 
+                                <span class="text-accent-amber font-semibold underline cursor-pointer">Immediate injunction recommended.</span>
+</p>
+</div>
+<div class="flex flex-col gap-2 w-full md:w-auto">
+<button class="bg-accent-amber text-black px-6 py-3 rounded-lg font-black text-sm hover:scale-105 transition-transform flex items-center justify-center gap-2">
+                                ACTIVATE REVIEW
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+<button class="glass-card px-6 py-2 rounded-lg font-bold text-xs text-slate-300 hover:text-white transition-colors">
+                                IGNORE
+                            </button>
+</div>
+</div>
+</div>
+<!-- KPI Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<!-- Debt KPI -->
+<div class="glass-card rounded-xl p-6 relative">
+<p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-4">Total Calculated Debt</p>
+<div class="flex items-end gap-2">
+<span class="text-4xl font-black text-slate-100">$4.2M</span>
+<span class="text-accent-neon text-xs font-bold mb-1 flex items-center">
+<span class="material-symbols-outlined text-xs">trending_up</span> 12.4%
+                            </span>
+</div>
+<div class="mt-4 h-1 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-accent-neon w-[65%] rounded-full shadow-[0_0_8px_rgba(0,242,255,0.5)]"></div>
+</div>
+</div>
+<!-- Evidence KPI -->
+<div class="glass-card rounded-xl p-6 relative">
+<p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-4">Verified Evidence</p>
+<div class="flex items-center justify-between">
+<div class="flex items-end gap-1">
+<span class="text-4xl font-black text-primary">87</span>
+<span class="text-xl font-bold text-slate-500 mb-1">%</span>
+</div>
+<div class="relative size-12">
+<svg class="size-full" viewbox="0 0 36 36">
+<circle class="stroke-current text-white/5" cx="18" cy="18" fill="none" r="16" stroke-width="4"></circle>
+<circle class="stroke-current text-primary" cx="18" cy="18" fill="none" r="16" stroke-dasharray="87, 100" stroke-linecap="round" stroke-width="4"></circle>
+</svg>
+</div>
+</div>
+<p class="text-[10px] text-slate-500 mt-2 italic">1,402 items authenticated via Blockchain</p>
+</div>
+<!-- Risk KPI -->
+<div class="glass-card rounded-xl p-6 border-r-4 border-accent-amber bg-accent-amber/5">
+<p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-4">Legal Risk Level</p>
+<div class="flex items-center gap-3">
+<span class="text-4xl font-black text-accent-amber">HIGH</span>
+<div class="flex gap-1">
+<div class="w-1.5 h-6 bg-accent-amber rounded-full"></div>
+<div class="w-1.5 h-6 bg-accent-amber rounded-full"></div>
+<div class="w-1.5 h-6 bg-accent-amber rounded-full"></div>
+<div class="w-1.5 h-6 bg-white/10 rounded-full"></div>
+</div>
+</div>
+<p class="text-[10px] text-accent-amber/70 mt-4 font-bold tracking-tight">CRITICAL VULNERABILITY IN DEPOSITION 04</p>
+</div>
+</div>
+<!-- 3D-Effect Case Map Section -->
+<div class="glass-card rounded-xl p-8 mb-8">
+<div class="flex justify-between items-center mb-10">
+<h4 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">map</span>
+                            Case Progress Map
+                        </h4>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold">Q3 FISCAL</span>
+<span class="px-3 py-1 bg-primary/20 text-primary rounded-full text-[10px] font-bold">ACTIVE</span>
+</div>
+</div>
+<!-- Futuristic Timeline Map -->
+<div class="relative py-12">
+<!-- Connecting Line -->
+<div class="absolute h-[2px] w-full bg-white/10 top-1/2 left-0 -translate-y-1/2"></div>
+<div class="absolute h-[2px] w-[60%] bg-primary top-1/2 left-0 -translate-y-1/2 shadow-[0_0_15px_#137fec]"></div>
+<div class="flex justify-between relative z-10">
+<!-- Milestone 1 -->
+<div class="flex flex-col items-center gap-3">
+<div class="size-4 bg-primary rounded-full ring-4 ring-primary/20"></div>
+<div class="text-center">
+<p class="text-[10px] font-black text-slate-200">FILING</p>
+<p class="text-[9px] text-slate-500">JAN 12</p>
+</div>
+</div>
+<!-- Milestone 2 -->
+<div class="flex flex-col items-center gap-3">
+<div class="size-4 bg-primary rounded-full ring-4 ring-primary/20"></div>
+<div class="text-center">
+<p class="text-[10px] font-black text-slate-200">DISCOVERY</p>
+<p class="text-[9px] text-slate-500">FEB 28</p>
+</div>
+</div>
+<!-- Milestone 3 -->
+<div class="flex flex-col items-center gap-3 -mt-4">
+<div class="size-12 rounded-xl glass-card border-primary flex items-center justify-center neon-glow-primary">
+<span class="material-symbols-outlined text-primary">gavel</span>
+</div>
+<div class="text-center mt-2">
+<p class="text-[10px] font-black text-primary tracking-widest">PRE-TRIAL</p>
+<p class="text-[9px] text-slate-300">CURRENT STAGE</p>
+</div>
+</div>
+<!-- Milestone 4 -->
+<div class="flex flex-col items-center gap-3 opacity-40">
+<div class="size-4 bg-slate-700 rounded-full"></div>
+<div class="text-center">
+<p class="text-[10px] font-black text-slate-500">MEDIATION</p>
+<p class="text-[9px] text-slate-500">TBD</p>
+</div>
+</div>
+<!-- Milestone 5 -->
+<div class="flex flex-col items-center gap-3 opacity-40">
+<div class="size-4 bg-slate-700 rounded-full"></div>
+<div class="text-center">
+<p class="text-[10px] font-black text-slate-500">VERDICT</p>
+<p class="text-[9px] text-slate-500">TBD</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Sidebar Case Summary -->
+<aside class="w-80 glass-sidebar flex flex-col p-6 z-10">
+<h3 class="text-lg font-black mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">list_alt</span>
+                    Case Summary
+                </h3>
+<div class="space-y-6">
+<section>
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Lead Counsel</p>
+<div class="flex items-center gap-3 mb-3">
+<div class="size-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">JV</div>
+<div>
+<p class="text-xs font-bold">Julian Vane</p>
+<p class="text-[10px] text-slate-500">Forensic Litigation Specialist</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-lg bg-accent-neon/20 flex items-center justify-center text-accent-neon font-bold text-xs">SK</div>
+<div>
+<p class="text-xs font-bold">Sarah Koenig</p>
+<p class="text-[10px] text-slate-500">Risk Assessment Lead</p>
+</div>
+</div>
+</section>
+<section class="glass-card rounded-lg p-4">
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Upcoming Deadlines</p>
+<div class="space-y-4">
+<div class="border-l-2 border-primary pl-3 py-1">
+<p class="text-xs font-bold">Final Deposition</p>
+<p class="text-[10px] text-slate-400">Oct 24 • 09:00 AM</p>
+</div>
+<div class="border-l-2 border-accent-amber pl-3 py-1">
+<p class="text-xs font-bold">Duress Response</p>
+<p class="text-[10px] text-slate-400">Oct 26 • 05:00 PM</p>
+</div>
+</div>
+</section>
+<section>
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Recent Activity</p>
+<div class="space-y-3">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-primary text-sm">history_edu</span>
+<p class="text-[10px] text-slate-300"><span class="font-bold">New Exhibit</span> filed by Defense Counsel.</p>
+</div>
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-primary text-sm">verified</span>
+<p class="text-[10px] text-slate-300"><span class="font-bold">Asset Audit</span> completed for Sub-Entity 4.</p>
+</div>
+</div>
+</section>
+<div class="mt-4">
+<div class="w-full bg-primary/10 rounded-xl p-4 border border-primary/20 text-center cursor-pointer hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined text-primary mb-1 block">download_for_offline</span>
+<span class="text-[10px] font-black tracking-widest text-primary uppercase">Export Executive Summary</span>
+</div>
+</div>
+</div>
+<div class="mt-auto">
+<div class="rounded-xl overflow-hidden relative aspect-video glass-card group">
+<img class="size-full object-cover opacity-50" data-alt="Stylized geometric 3D pattern map of a city" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvEas0a3rPVOOqVAL9N9EVa_Er79rKNB0pPbKlE4Jt-E9BtnkWSS3VrWn24TKA1Am69LSx0m3zbU8Ar_WY971AI61UuPeHTVVjYizFTHtX0d2reejOnjwarr4rLM_U3g4iLHsESr3i5oA4I0j_8PY95VN8es70nsNDBJKPPOwJq_CRfckeGz9W8ShY-LdYbWuxWafJJGFtflhNOLWlpGYvnuaOgPpm5qS5mlpdZ3kd1_Fp1ar7ZynlRPCtciwMcP4b7knagCtKTrM"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent flex items-end p-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-xs text-primary fill-1">location_on</span>
+<span class="text-[9px] font-bold text-slate-100" data-location="Zurich, Switzerland">ZURICH OFFICE • ACTIVE</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</main>
+</div>
+</body></html>

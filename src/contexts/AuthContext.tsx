@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
@@ -79,14 +80,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const updateProfile = async (updates: Partial<AuthProfile>) => {
         if (!user) return;
         try {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from('profiles')
-                .update(updates)
-                .eq('id', user.id);
+                .upsert({ id: user.id, ...updates })
+                .select()
+                .single();
 
             if (error) throw error;
 
-            setProfile(prev => prev ? { ...prev, ...updates } : null);
+            setProfile(prev => prev ? { ...prev, ...updates } : (data as AuthProfile));
         } catch (err) {
             console.error('Error updating profile:', err);
             throw err;

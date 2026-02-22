@@ -187,7 +187,7 @@ export default function Founders() {
                         <div>
                             <h3 className="text-sm font-semibold text-text-main">Disclosure</h3>
                             <p className="text-xs text-text-muted mt-1 leading-relaxed">
-                                While several Venture Capital firms and institutional accelerators have conducted preliminary due diligence and valuation exercises, no institutional capital has been secured or finalized over the past 24 months. The company remains exclusively funded by the aforementioned private syndicate and operational revenue.
+                                While several Venture Capital firms and institutional accelerators have conducted preliminary due diligence and valuation exercises, no institutional capital has been secured or finalized over the past 24 months. The company remains exclusively funded by the aforementioned private syndicate, and there is no operational revenue.
                             </p>
                         </div>
                     </div>

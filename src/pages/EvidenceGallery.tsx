@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 export const dynamic = 'force-dynamic';
-import { UploadCloud, FileText, ExternalLink, ShieldCheck, FileBadge, TrendingUp, MessageSquare, Lock, Folders, Scale, X, Download } from 'lucide-react';
+import { UploadCloud, FileText, ExternalLink, ShieldCheck, FileBadge, TrendingUp, MessageSquare, Lock, Folders, Scale, X, Download, AlertTriangle } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 
 const parseFiles = (filesData: unknown): string[] => {
@@ -153,27 +153,27 @@ export default function EvidenceGallery() {
 
     if (isLoading) {
         return (
-            <div className="max-w-6xl mx-auto pb-12 flex items-center justify-center min-h-[50vh]">
+            <div className="w-full flex items-center justify-center min-h-[50vh]">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-text-muted font-medium tracking-wide">Decrypting vault contents...</p>
+                    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(19,127,236,0.6)]"></div>
+                    <p className="text-text-muted font-bold tracking-widest uppercase text-xs">Decrypting vault contents...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="max-w-6xl mx-auto pb-12">
+        <div className="w-full max-w-7xl mx-auto pb-12 animate-in fade-in duration-700">
             <header className="mb-10 flex flex-col gap-1">
-                <p className="text-sm font-medium text-text-muted tracking-wide uppercase">Secure Repository</p>
+                <p className="text-xs font-bold text-primary tracking-widest uppercase mb-1 drop-shadow-[0_0_8px_rgba(19,127,236,0.8)]">Secure Repository Access</p>
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                    <h1 className="text-3xl font-bold text-text-main">Evidence Vault</h1>
+                    <h1 className="text-4xl font-black text-text-main tracking-tight">Evidence Vault</h1>
                     {isLawyerOrAdmin && (
                         <button
                             onClick={() => setShowUpload(!showUpload)}
-                            className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-primary/20 w-full md:w-auto font-medium"
+                            className={`flex items-center justify-center gap-2 px-6 py-3 rounded-xl transition-all font-bold tracking-wide text-sm ${showUpload ? 'bg-bg-surface-hover text-text-main border border-border-default hover:border-border-hover' : 'bg-primary text-white hover:bg-primary-hover shadow-[0_0_20px_rgba(19,127,236,0.4)] hover:shadow-[0_0_25px_rgba(19,127,236,0.6)] neon-glow-primary'}`}
                         >
-                            {showUpload ? 'Cancel Upload' : <><UploadCloud className="w-5 h-5" /> Upload Evidence</>}
+                            {showUpload ? 'CANCEL SECURE UPLOAD' : <><UploadCloud className="w-5 h-5" /> INITIATE SECURE UPLOAD</>}
                         </button>
                     )}
                 </div>
@@ -181,34 +181,40 @@ export default function EvidenceGallery() {
 
             {/* Upload Area */}
             {showUpload && isLawyerOrAdmin && (
-                <div className="glass-panel p-6 rounded-2xl mb-10 border border-blue-500/30">
-                    <h3 className="text-lg font-semibold text-text-main mb-6">Upload New Document to Vault</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
+                <div className="glass-card p-8 rounded-2xl mb-10 border border-primary/30 neon-glow-primary bg-bg-surface/40 animate-in slide-in-from-top-4 duration-500">
+                    <h3 className="text-xl font-black text-text-main mb-6 flex items-center gap-3">
+                        <ShieldCheck className="w-6 h-6 text-primary" /> Transmit to Vault
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-6">
                             <DualLanguageInput
                                 label="Document Title"
                                 value={title}
                                 onChange={setTitle}
                                 onTranslated={setTitleAr}
-                                placeholder="e.g. GOSI Certificate"
+                                placeholder="e.g. Authenticated GOSI Certificate"
                             />
                             <div>
-                                <label className="text-sm font-medium text-text-muted ml-1 block mb-1">Verification Code (If applicable)</label>
-                                <input type="text" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} placeholder="e.g. 109884831" className="w-full bg-bg-surface/80 border border-slate-700 rounded-xl px-4 py-2.5 text-text-main placeholder:text-slate-600 focus:border-blue-500 outline-none" />
+                                <label className="text-xs font-bold text-text-muted uppercase tracking-widest ml-1 block mb-2">Verification Code (If applicable)</label>
+                                <input type="text" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} placeholder="e.g. 109884831" className="w-full bg-background-dark/50 border border-border-default rounded-xl px-4 py-3 text-text-main placeholder:text-text-muted/50 focus:border-primary outline-none transition-colors shadow-inner" />
                             </div>
                         </div>
 
                         <div className="flex flex-col justify-end">
-                            <div className="border border-dashed border-slate-600 rounded-xl p-6 text-center bg-bg-surface hover:bg-slate-800/50 transition">
-                                <FileBadge className="w-8 h-8 text-text-muted mx-auto mb-3" />
-                                <p className="text-sm text-text-muted mb-4">Select the PDF file containing the evidence.</p>
-                                <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} className="block w-full text-sm text-text-muted file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600/20 file:text-blue-400 hover:file:bg-blue-600/30 cursor-pointer" />
+                            <div className="border-2 border-dashed border-border-hover rounded-xl p-8 text-center bg-bg-surface-hover/30 hover:bg-primary/5 hover:border-primary/50 transition-all cursor-pointer group relative overflow-hidden">
+                                <FileBadge className="w-10 h-10 text-text-muted mx-auto mb-4 group-hover:text-primary transition-colors group-hover:scale-110 duration-500" />
+                                <p className="text-sm font-bold text-text-main mb-2">Select Authenticated Payload</p>
+                                <p className="text-[10px] uppercase text-text-muted mb-6 tracking-widest">PDF FORMAT REQUIRED FOR VAULT INGESTION</p>
+                                <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                <div className="mx-auto bg-primary/10 text-primary px-6 py-2 rounded-lg text-sm font-bold inline-block border border-primary/20 group-hover:bg-primary/20 transition-colors">
+                                    {file ? file.name : 'BROWSE FILES'}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div className="mt-6 flex justify-end pt-6 border-t border-slate-800">
-                        <button onClick={handleUpload} disabled={isUploading || !file} className="bg-white text-slate-900 hover:bg-slate-200 disabled:opacity-50 font-medium px-8 py-2.5 rounded-xl transition-colors">
-                            {isUploading ? 'Uploading & Encrypting...' : 'Secure Upload to Vault'}
+                    <div className="mt-8 flex justify-end pt-6 border-t border-border-default">
+                        <button onClick={handleUpload} disabled={isUploading || !file} className="bg-text-main text-background-dark hover:bg-text-muted disabled:opacity-50 font-black tracking-wide text-sm px-10 py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] flex items-center gap-2">
+                            {isUploading ? <><UploadCloud className="w-4 h-4 animate-bounce" /> ENCRYPTING & UPLOADING...</> : <><Lock className="w-4 h-4" /> COMMIT TO SECURE VAULT</>}
                         </button>
                     </div>
                 </div>
@@ -216,99 +222,123 @@ export default function EvidenceGallery() {
 
             {/* Grid */}
             {documents.length === 0 ? (
-                <div className="text-center py-20 glass-panel rounded-3xl border border-slate-800/50">
-                    <Folders className="w-12 h-12 text-slate-600 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium text-text-muted">Vault is empty</h3>
-                    <p className="text-text-muted text-sm mt-2">No evidence documents have been securely uploaded yet.</p>
+                <div className="text-center py-24 glass-card rounded-3xl border border-border-default">
+                    <div className="relative inline-block">
+                        <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full"></div>
+                        <Folders className="w-16 h-16 text-primary relative z-10 mx-auto mb-6 opacity-80" />
+                    </div>
+                    <h3 className="text-2xl font-black text-text-main tracking-tight">Vault is Empty</h3>
+                    <p className="text-text-muted text-sm mt-2 font-medium tracking-wide">Awaiting encrypted file ingestion from lead counsel.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {documents.map((doc) => {
                         console.log('Fila actual (Vault):', doc);
                         const parsedFiles = parseFiles(doc.evidence_files);
                         return (
                             <div
                                 key={doc.id}
-                                className="glass-panel rounded-2xl flex flex-col h-full group border border-slate-800 hover:border-slate-700 transition overflow-hidden cursor-pointer"
+                                className="glass-card rounded-2xl flex flex-col h-full group hover:border-primary/40 hover:shadow-[0_0_30px_rgba(19,127,236,0.15)] transition-all duration-500 overflow-hidden cursor-pointer relative"
                                 onClick={() => setSelectedEvidence(doc)}
                             >
+                                {/* Highlight overlay on hover */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
 
                                 {/* Hero Image Snippet */}
                                 {doc._snippetSignedUrl ? (
-                                    <div className="w-full h-48 bg-slate-900 border-b border-slate-800 relative">
+                                    <div className="w-full h-48 bg-background-dark border-b border-border-default relative overflow-hidden">
                                         <img
                                             src={doc._snippetSignedUrl}
                                             alt={`Highlight for ${doc.title}`}
-                                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                                            className="w-full h-full object-cover opacity-60 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#151822] to-transparent"></div>
+                                        <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/20 to-transparent"></div>
+
+                                        {/* Verification Badge Overlay */}
+                                        {doc.verification_code && (
+                                            <div className="absolute top-4 left-4 bg-background-dark/80 backdrop-blur-md border border-emerald-500/30 px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                                                <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                                                <span className="text-[9px] font-black text-emerald-400 tracking-widest uppercase">Verified Auth</span>
+                                            </div>
+                                        )}
                                     </div>
                                 ) : (
-                                    <div className="h-4"></div> // Top padding if no image
+                                    <div className="h-4 relative">
+                                        {/* Verification Badge alternative if no image */}
+                                        {doc.verification_code && (
+                                            <div className="absolute top-2 left-4 px-2 flex items-center gap-1.5">
+                                                <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                                                <span className="text-[9px] font-black text-emerald-500 tracking-widest uppercase">Verified Auth</span>
+                                            </div>
+                                        )}
+                                    </div>
                                 )}
 
-                                <div className="p-5 flex flex-col flex-1">
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                                            {doc.category === 'Communication' && <MessageSquare className="w-6 h-6 text-blue-400" />}
-                                            {doc.category === 'Financial' && <TrendingUp className="w-6 h-6 text-amber-400" />}
-                                            {doc.category === 'Government' && <FileText className="w-6 h-6 text-emerald-400" />}
-                                            {doc.category === 'Audio' && <UploadCloud className="w-6 h-6 text-purple-400" />}
-                                            {!['Communication', 'Financial', 'Government', 'Audio'].includes(doc.category) && <FileText className="w-6 h-6 text-blue-400" />}
+                                <div className="p-6 flex flex-col flex-1 relative z-10">
+                                    <div className="flex items-start justify-between mb-5">
+                                        <div className="w-12 h-12 rounded-xl bg-bg-surface-hover/50 border border-border-default flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                                            {doc.category === 'Communication' && <MessageSquare className="w-6 h-6 text-primary" />}
+                                            {doc.category === 'Financial' && <TrendingUp className="w-6 h-6 text-accent-amber" />}
+                                            {doc.category === 'Government' && <FileText className="w-6 h-6 text-emerald-500" />}
+                                            {doc.category === 'Audio' && <UploadCloud className="w-6 h-6 text-accent-neon" />}
+                                            {!['Communication', 'Financial', 'Government', 'Audio'].includes(doc.category) && <FileText className="w-6 h-6 text-text-muted" />}
                                         </div>
-                                        <div className="text-[10px] font-bold bg-bg-surface-hover text-text-main px-2 py-1 rounded uppercase tracking-wider border border-border-default shadow-sm">
+                                        <div className="text-[9px] font-black bg-background-dark/60 text-text-muted px-2.5 py-1.5 rounded-lg uppercase tracking-[0.2em] border border-border-default shadow-sm backdrop-blur-md">
                                             {doc.category}
                                         </div>
                                     </div>
 
-                                    <h4 className="text-lg font-bold text-text-main mb-2 leading-tight">
+                                    <h4 className="text-xl font-black text-text-main mb-2 leading-tight group-hover:text-primary transition-colors">
                                         {doc.title}
                                     </h4>
-                                    <p className="text-xs text-text-muted font-arabic mb-4 line-clamp-2" dir="rtl">{doc.arabic_translation}</p>
+                                    <p className="text-xs text-text-muted/80 font-arabic mb-5 line-clamp-2" dir="rtl">{doc.arabic_translation}</p>
 
                                     {/* Bilingual Legal Significance */}
                                     {(doc.legal_significance_en || doc.legal_significance_ar) && (
-                                        <div className="my-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-sm">
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <Scale className="w-4 h-4 text-amber-500" />
-                                                <span className="font-semibold text-text-main">Legal Context</span>
+                                        <div className="my-5 p-4 rounded-xl bg-background-dark/40 border border-border-default text-sm shadow-inner overflow-hidden relative">
+                                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent-amber"></div>
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <Scale className="w-4 h-4 text-accent-amber" />
+                                                <span className="font-bold text-xs uppercase tracking-widest text-text-main">Legal Context</span>
                                             </div>
-                                            {doc.legal_significance_en && <p className="text-text-main mb-3">{doc.legal_significance_en}</p>}
-                                            {doc.legal_significance_ar && <p className="text-text-main font-arabic border-t border-slate-700/50 pt-2" dir="rtl">{doc.legal_significance_ar}</p>}
+                                            {doc.legal_significance_en && <p className="text-text-muted text-xs leading-relaxed mb-3">{doc.legal_significance_en}</p>}
+                                            {doc.legal_significance_ar && <p className="text-text-muted/80 text-xs leading-relaxed font-arabic border-t border-border-default/50 pt-3" dir="rtl">{doc.legal_significance_ar}</p>}
                                         </div>
                                     )}
 
                                     {/* Special CSV UI Callout */}
                                     {(doc.title.includes('CSV') || doc.file_url?.endsWith('.csv')) && (
-                                        <div className="my-4 border border-rose-500/30 rounded-xl overflow-hidden bg-rose-500/5">
-                                            <div className="bg-rose-500/20 px-3 py-2 border-b border-rose-500/30 flex justify-between items-center">
-                                                <span className="text-xs font-bold text-rose-400 uppercase tracking-wider">Key Audit Findings</span>
-                                                <span className="text-[10px] text-rose-500">Extracted from source</span>
+                                        <div className="my-5 glass-card border-rose-500/30 rounded-xl overflow-hidden bg-rose-950/20 relative">
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
+                                            <div className="bg-rose-950/40 px-4 py-2.5 border-b border-rose-500/20 flex justify-between items-center">
+                                                <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest flex items-center gap-2">
+                                                    <AlertTriangle className="w-3 h-3" /> Key Audit Findings
+                                                </span>
                                             </div>
-                                            <div className="p-3">
+                                            <div className="p-4 relative z-10">
                                                 <table className="w-full text-xs text-left text-text-muted">
                                                     <thead>
-                                                        <tr className="border-b border-rose-500/20 text-rose-400">
-                                                            <th className="font-medium pb-2 w-20">Date</th>
-                                                            <th className="font-medium pb-2">Log Entry</th>
-                                                            <th className="font-medium pb-2 text-right">Status</th>
+                                                        <tr className="border-b border-border-default text-text-muted/70">
+                                                            <th className="font-bold uppercase tracking-wider pb-2 w-20 text-[9px]">Date</th>
+                                                            <th className="font-bold uppercase tracking-wider pb-2 text-[9px]">Log Entry</th>
+                                                            <th className="font-bold uppercase tracking-wider pb-2 text-right text-[9px]">Status</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody className="divide-y divide-slate-800/50">
-                                                        <tr>
-                                                            <td className="py-2 text-text-muted">Jan 15</td>
-                                                            <td className="py-2">Funds Transfer Initiated</td>
-                                                            <td className="py-2 text-right text-emerald-400">Cleared</td>
+                                                    <tbody className="divide-y divide-border-default/50">
+                                                        <tr className="group/row hover:bg-white/5 transition-colors">
+                                                            <td className="py-2.5 text-text-muted font-medium">Jan 15</td>
+                                                            <td className="py-2.5 font-medium">Funds Transfer Initiated</td>
+                                                            <td className="py-2.5 text-right font-black text-emerald-400">CLEARED</td>
                                                         </tr>
-                                                        <tr className="bg-rose-500/10">
-                                                            <td className="py-2 text-rose-300 font-medium">Feb 12</td>
-                                                            <td className="py-2 text-rose-300 font-medium">Partnership Dissolution Notice</td>
-                                                            <td className="py-2 text-right text-rose-400 font-bold">Executed</td>
+                                                        <tr className="bg-rose-500/10 border-l-2 border-l-rose-500">
+                                                            <td className="py-2.5 pl-2 text-rose-300 font-bold">Feb 12</td>
+                                                            <td className="py-2.5 text-rose-300 font-bold">Partnership Dissolution Notice</td>
+                                                            <td className="py-2.5 text-right font-black text-rose-400 tracking-wider">EXECUTED</td>
                                                         </tr>
-                                                        <tr>
-                                                            <td className="py-2 text-text-muted">Mar 01</td>
-                                                            <td className="py-2">Account Frozen</td>
-                                                            <td className="py-2 text-right text-amber-400">Pending</td>
+                                                        <tr className="group/row hover:bg-white/5 transition-colors">
+                                                            <td className="py-2.5 text-text-muted font-medium">Mar 01</td>
+                                                            <td className="py-2.5 font-medium">Account Frozen</td>
+                                                            <td className="py-2.5 text-right font-black text-accent-amber">PENDING</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -316,18 +346,7 @@ export default function EvidenceGallery() {
                                         </div>
                                     )}
 
-                                    {/* Evidence Integrity Banner */}
-                                    {doc.verification_code && (
-                                        <div className="mt-auto bg-bg-surface p-3 rounded-xl border border-emerald-500/20 flex items-center justify-between mb-4 mt-4">
-                                            <div className="flex items-center gap-2">
-                                                <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                                                <span className="text-xs text-emerald-500 font-medium">Verified Gov Document</span>
-                                            </div>
-                                            <span className="text-xs text-text-muted font-mono">CODE: {doc.verification_code}</span>
-                                        </div>
-                                    )}
-
-                                    <div className="mt-auto pt-4 flex flex-col gap-2">
+                                    <div className="mt-auto pt-6 flex flex-col gap-3 relative z-10">
                                         {parsedFiles.length > 0 ? (
                                             parsedFiles.map((fileName: string, index: number) => (
                                                 <a
@@ -336,9 +355,9 @@ export default function EvidenceGallery() {
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     onClick={(e) => e.stopPropagation()}
-                                                    className="w-full py-2.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-blue-500/20"
+                                                    className="w-full py-3 bg-primary/10 text-primary hover:bg-primary/20 hover:text-white justify-center rounded-xl flex items-center gap-2 text-xs font-black tracking-widest uppercase transition-all border border-primary/20 hover:shadow-[0_0_15px_rgba(19,127,236,0.3)]"
                                                 >
-                                                    <Download className="w-4 h-4" /> Ver {fileName}
+                                                    <Download className="w-4 h-4" /> Download VER.{fileName.substring(0, 4)}
                                                 </a>
                                             ))
                                         ) : doc.file_url ? (
@@ -347,17 +366,17 @@ export default function EvidenceGallery() {
                                                     e.stopPropagation();
                                                     handleViewDocument(doc.file_url!);
                                                 }}
-                                                className="w-full py-2.5 bg-bg-surface hover:bg-slate-800 text-text-main justify-center rounded-xl flex items-center gap-2 text-sm font-medium transition-colors border border-slate-800 hover:border-slate-700"
+                                                className="w-full py-3 bg-bg-surface-hover hover:bg-bg-surface text-text-main justify-center rounded-xl flex items-center gap-2 text-xs font-black tracking-widest uppercase transition-all border border-border-default shadow-sm hover:shadow-md"
                                             >
-                                                <ExternalLink className="w-4 h-4" /> View Original Document
+                                                <ExternalLink className="w-4 h-4" /> View Original
                                             </button>
                                         ) : (
                                             <button
                                                 disabled
                                                 onClick={(e) => e.stopPropagation()}
-                                                className="w-full py-2.5 bg-bg-surface/50 text-text-muted justify-center rounded-xl flex items-center gap-2 text-sm font-medium border border-slate-800/50 cursor-not-allowed"
+                                                className="w-full py-3 bg-background-dark/50 text-text-muted justify-center rounded-xl flex items-center gap-2 text-xs font-bold tracking-widest uppercase border border-border-default cursor-not-allowed opacity-70"
                                             >
-                                                <Lock className="w-4 h-4" /> Offline Evidence
+                                                <Lock className="w-4 h-4" /> Offline Asset
                                             </button>
                                         )}
                                     </div>
@@ -370,52 +389,72 @@ export default function EvidenceGallery() {
 
             {/* Modal */}
             {selectedEvidence && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm"
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-lg animate-in fade-in duration-300"
                     onClick={() => setSelectedEvidence(null)}>
                     <div
-                        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col bg-bg-surface rounded-2xl overflow-hidden shadow-2xl border border-slate-700"
+                        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col glass-card bg-background-dark/95 rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-border-hover animate-in zoom-in-95 duration-300"
                         onClick={e => e.stopPropagation()}
                     >
                         <button
                             onClick={() => setSelectedEvidence(null)}
-                            className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/80 rounded-full text-text-main transition-colors"
+                            className="absolute top-6 right-6 z-10 p-2.5 bg-text-main/10 hover:bg-primary hover:text-white rounded-xl text-text-muted transition-all backdrop-blur-md"
                         >
                             <X className="w-5 h-5" />
                         </button>
 
                         {/* Explanation Above Image */}
-                        <div className="p-6 sm:p-8 bg-slate-900 border-b border-slate-800 shrink-0">
-                            <h3 className="text-xl font-bold text-text-main mb-3 pr-8">{selectedEvidence.title}</h3>
+                        <div className="p-8 border-b border-border-default shrink-0 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="text-[10px] font-black bg-primary/20 text-primary px-3 py-1.5 rounded-lg uppercase tracking-[0.2em] border border-primary/20">
+                                    {selectedEvidence.category}
+                                </div>
+                                {selectedEvidence.verification_code && (
+                                    <div className="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-lg uppercase tracking-widest flex items-center gap-1.5 border border-emerald-500/20">
+                                        <ShieldCheck className="w-3 h-3" /> VERIFIED
+                                    </div>
+                                )}
+                            </div>
+                            <h3 className="text-3xl font-black text-text-main mb-6 pr-12 leading-tight tracking-tight">{selectedEvidence.title}</h3>
+
                             {(selectedEvidence.legal_significance_en || selectedEvidence.legal_significance_ar) ? (
-                                <div className="space-y-3">
+                                <div className="space-y-4 max-w-3xl relative z-10">
                                     {selectedEvidence.legal_significance_en && (
-                                        <p className="text-sm text-text-muted leading-relaxed bg-black/20 p-3 rounded-lg border border-slate-700/50">
-                                            {selectedEvidence.legal_significance_en}
-                                        </p>
+                                        <div className="flex items-start gap-4">
+                                            <Scale className="w-5 h-5 text-accent-amber shrink-0 mt-1" />
+                                            <p className="text-sm font-medium text-text-main/90 leading-relaxed">
+                                                {selectedEvidence.legal_significance_en}
+                                            </p>
+                                        </div>
                                     )}
                                     {selectedEvidence.legal_significance_ar && (
-                                        <p className="text-sm text-text-muted leading-relaxed font-arabic text-right bg-black/20 p-3 rounded-lg border border-slate-700/50" dir="rtl">
-                                            {selectedEvidence.legal_significance_ar}
-                                        </p>
+                                        <div className="flex items-start gap-4 flex-row-reverse border-t border-border-default/50 pt-4">
+                                            <Scale className="w-5 h-5 text-accent-amber shrink-0 mt-1" />
+                                            <p className="text-sm font-medium text-text-main/80 leading-relaxed font-arabic text-right w-full" dir="rtl">
+                                                {selectedEvidence.legal_significance_ar}
+                                            </p>
+                                        </div>
                                     )}
                                 </div>
                             ) : (
-                                <p className="text-sm text-text-muted italic">No legal context provided.</p>
+                                <p className="text-sm font-medium text-text-muted italic relative z-10">No formalized contextual analysis currently associated with this exhibit.</p>
                             )}
                         </div>
 
                         {/* Screenshot */}
-                        <div className="flex-1 overflow-auto bg-black p-4 flex items-center justify-center min-h-[40vh]">
+                        <div className="flex-1 overflow-auto bg-[#050608] p-4 flex items-center justify-center min-h-[40vh] relative custom-scrollbar">
+                            <div className="absolute inset-0 pattern-grid-lg text-white/5 opacity-20 pointer-events-none"></div>
                             {selectedEvidence._snippetSignedUrl ? (
                                 <img
                                     src={selectedEvidence._snippetSignedUrl}
                                     alt={selectedEvidence.title}
-                                    className="max-w-full max-h-full object-contain rounded"
+                                    className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl relative z-10 border border-border-default/30"
                                 />
                             ) : (
-                                <div className="text-center text-text-muted">
-                                    <FileBadge className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                                    <p>No screenshot available for this evidence.</p>
+                                <div className="text-center text-text-muted/50 relative z-10">
+                                    <FileBadge className="w-20 h-20 mx-auto mb-6 opacity-30" />
+                                    <p className="font-bold tracking-widest uppercase text-xs">VISUAL EVIDENCE UNAVAILABLE</p>
+                                    <p className="text-[10px] mt-2 max-w-xs mx-auto">This asset requires original document extraction to view securely.</p>
                                 </div>
                             )}
                         </div>

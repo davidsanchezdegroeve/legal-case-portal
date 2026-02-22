@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { User, Building2, UploadCloud, Lock, Save, FileBadge } from 'lucide-react';
@@ -26,6 +26,15 @@ export default function UserProfile() {
 
     const avatarInputRef = useRef<HTMLInputElement>(null);
     const logoInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (profile) {
+            setFullName(profile.full_name || '');
+            setCompanyName(profile.company_name || '');
+            if (!avatarFile) setAvatarPreview(profile.avatar_url || '');
+            if (!logoFile) setLogoPreview(profile.company_logo_url || '');
+        }
+    }, [profile, avatarFile, logoFile]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'logo') => {
         const file = e.target.files?.[0];
