@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Lock, Download, AlertCircle, Loader2 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 
 export default function SecureDownload() {
     const [password, setPassword] = useState('');
@@ -12,6 +11,7 @@ export default function SecureDownload() {
     // This is the hardcoded password
     const securePassword = "legal-access-2025";
     const [isDownloading, setIsDownloading] = useState(false);
+    const [downloadProgress, setDownloadProgress] = useState(0);
 
     const handleUnlock = (e: React.FormEvent) => {
         e.preventDefault();
@@ -88,49 +88,82 @@ export default function SecureDownload() {
                             <span className="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded text-xs font-bold border border-emerald-500/20">VERIFIED</span>
                         </div>
 
-                        <button
-                            onClick={async () => {
-                                try {
-                                    setIsDownloading(true);
-                                    // Using the Supabase client directly forces a proper download stream
-                                    // and usually avoids CORS preflight failures compared to simple links
-                                    const { data, error } = await supabase.storage
-                                        .from('conf')
-                                        .download(fileName);
+                        <div className="relative w-full">
+                            <button
+                                onClick={async () => {
+                                    try {
+                                        setIsDownloading(true);
+                                        setDownloadProgress(0);
 
-                                    if (error) throw error;
+                                        const publicUrl = `https://amsxzshsxqyubutmwfhn.supabase.co/storage/v1/object/public/conf/${fileName}`;
 
-                                    // Create a blob and simulate a click to force the browser to save it
-                                    const url = URL.createObjectURL(data);
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = fileName;
-                                    document.body.appendChild(a);
-                                    a.click();
-                                    document.body.removeChild(a);
-                                    URL.revokeObjectURL(url);
-                                } catch (err) {
-                                    console.error("Download failed:", err);
-                                    alert("There was an error downloading the file. Please check if the file exists in the vault.");
-                                } finally {
-                                    setIsDownloading(false);
-                                }
-                            }}
-                            disabled={isDownloading}
-                            className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 group"
-                        >
-                            {isDownloading ? (
-                                <>
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    Decrypting & Downloading...
-                                </>
-                            ) : (
-                                <>
-                                    <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
-                                    Download Original Evidence
-                                </>
-                            )}
-                        </button>
+                                        // Use XHR to track download progress properly
+                                        const blob = await new Promise<Blob>((resolve, reject) => {
+                                            const xhr = new XMLHttpRequest();
+                                            xhr.open('GET', publicUrl, true);
+                                            xhr.responseType = 'blob';
+
+                                            xhr.onprogress = (event) => {
+                                                if (event.lengthComputable) {
+                                                    const percentComplete = Math.round((event.loaded / event.total) * 100);
+                                                    setDownloadProgress(percentComplete);
+                                                }
+                                            };
+
+                                            xhr.onload = () => {
+                                                if (xhr.status >= 200 && xhr.status < 300) {
+                                                    resolve(xhr.response);
+                                                } else {
+                                                    reject(new Error(`HTTP status ${xhr.status}`));
+                                                }
+                                            };
+
+                                            xhr.onerror = () => reject(new Error("Network error"));
+                                            xhr.send();
+                                        });
+
+                                        // Create a blob and simulate a click to force the browser to save it
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = fileName;
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        document.body.removeChild(a);
+                                        URL.revokeObjectURL(url);
+                                    } catch (err) {
+                                        console.error("Download failed:", err);
+                                        alert("There was an error downloading the file. Please check if the file exists in the vault.");
+                                    } finally {
+                                        setIsDownloading(false);
+                                        setTimeout(() => setDownloadProgress(0), 1000); // Reset after a tiny delay
+                                    }
+                                }}
+                                disabled={isDownloading}
+                                className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 group relative overflow-hidden"
+                            >
+                                {isDownloading && (
+                                    <div
+                                        className="absolute left-0 top-0 bottom-0 bg-white/20 transition-all duration-300 ease-out"
+                                        style={{ width: `${downloadProgress}%` }}
+                                    ></div>
+                                )}
+
+                                <div className="relative z-10 flex items-center gap-2">
+                                    {isDownloading ? (
+                                        <>
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                            Downloading... {downloadProgress > 0 ? `${downloadProgress}%` : ''}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
+                                            Download Original Evidence
+                                        </>
+                                    )}
+                                </div>
+                            </button>
+                        </div>
 
                         <p className="text-xs text-center text-slate-500 mt-4">
                             By downloading this file, you agree to the confidentiality terms of the proceedings.
