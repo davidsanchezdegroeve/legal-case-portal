@@ -1,0 +1,38 @@
+[
+  {
+    "id": "33333333-3333-3333-3333-333333333333",
+    "title": "Rayhanah Palace Pricing",
+    "category": "Financial Sacrifice",
+    "file_url": "Rayhanah Palace  Compound Prices.png",
+    "verification_code": "N/A",
+    "original_language": "English",
+    "arabic_translation": "تسعير مجمع ريحانة بالاس",
+    "created_at": "2026-02-21T03:42:23.735683+00:00",
+    "legal_significance": "Housing Claim Support: Baseline for 100k+ SAR annual housing allowance promised and previously held. / دعم مطالبة السكن: يوضح تكاليف السكن التنفيذي المعيارية لدعم مطالبة بدل السكن.",
+    "highlight_snippet_url": "housing_highlight.png",
+    "legal_significance_ar": "يوضح التكاليف المعيارية للسكن التنفيذي (100 ألف ريال) لدعم المطالبة ببدل السكن بناءً على المزايا المتفق عليها.",
+    "evidence_files": [
+      "Rayhanah Palace Compound Prices.png",
+      "housing_highlight.png",
+      "RentalWaleedOct.pdf"
+    ]
+  },
+  {
+    "id": "44444444-4444-4444-4444-444444444444",
+    "title": "DKIM/Email Audit Logs",
+    "category": "Fraud Evidence",
+    "file_url": "DKIM.csv",
+    "verification_code": "N/A",
+    "original_language": "English",
+    "arabic_translation": "سجلات تدقيق البريد الإلكتروني",
+    "created_at": "2026-02-21T03:42:23.735683+00:00",
+    "legal_significance": "Bad Faith Evidence: Logs prove dissolution was planned on Feb 12th, while deceptive negotiations occurred on Feb 15th. / دليل سوء النية: سجلات تثبت التخطيط للفسخ في 12 فبراير قبل الخداع التعاقدي في 15 فبراير.",
+    "highlight_snippet_url": "csv_highlight.png",
+    "legal_significance_ar": "دليل الإدانة القاطع: يظهر سجل التدقيق أن الرئيس التنفيذي بدأ إجراءات فسخ الشراكة في 12 فبراير، قبل ممارسة الضغط لتوقيع اتفاقية جديدة.",
+    "evidence_files": [
+      "CEO asking CTO to check the email bounce issue.png",
+      "ceo_email_highlight.png",
+      "DKIM.csv"
+    ]
+  }
+]

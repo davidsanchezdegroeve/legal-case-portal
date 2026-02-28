@@ -41,9 +41,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
         });
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             setSession(session);
             setUser(session?.user ?? null);
+
+            if (event === 'SIGNED_IN' && session?.user) {
+                try {
+                    await supabase.from('auth_logs').insert({
+                        user_id: session.user.id,
+                        email: session.user.email,
+                        event_type: 'login'
+                    });
+                } catch (e) {
+                    console.error('Failed to log sign in:', e);
+                }
+            }
+
             if (session?.user) {
                 fetchProfile(session.user.id);
             } else {
@@ -74,6 +87,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const signOut = async () => {
+        if (user) {
+            try {
+                await supabase.from('auth_logs').insert({
+                    user_id: user.id,
+                    email: user.email,
+                    event_type: 'logout'
+                });
+            } catch (e) {
+                console.error('Failed to log sign out:', e);
+            }
+        }
         await supabase.auth.signOut();
     };
 

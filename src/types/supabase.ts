@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      auth_logs: {
+        Row: {
+          id: string
+          user_id: string
+          email: string | null
+          event_type: 'login' | 'logout'
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          email?: string | null
+          event_type: 'login' | 'logout'
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          email?: string | null
+          event_type?: 'login' | 'logout'
+          created_at?: string
+        }
+        Relationships: []
+      }
       evidence_vault: {
         Row: {
           arabic_translation: string | null
