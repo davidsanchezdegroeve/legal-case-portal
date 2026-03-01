@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Plus, AlertOctagon, CircleDot, FileEdit, FileText, FileWarning, X, Landmark } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Plus, AlertOctagon, CircleDot, FileEdit, FileText, FileWarning, X, Landmark, ExternalLink } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
 
 interface TimelineEvent {
@@ -12,12 +13,22 @@ interface TimelineEvent {
     is_bad_faith_indicator: boolean;
     arabic_translation?: string;
     category?: 'general' | 'contract' | 'bad_faith' | 'milestone' | 'financial' | 'vesting'; // Extended types
+    proof_link_id?: string;
+}
+
+export interface EvidenceDoc {
+    id: string;
+    title: string;
+    file_url: string | null;
+    evidence_files: string[] | null;
+    category: string;
 }
 
 export default function Timeline() {
     const { profile } = useAuth();
     const isAdmin = profile?.role === 'admin';
     const [events, setEvents] = useState<TimelineEvent[]>([]);
+    const [evidenceDocs, setEvidenceDocs] = useState<EvidenceDoc[]>([]);
     const [showAdd, setShowAdd] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
@@ -58,16 +69,25 @@ export default function Timeline() {
     const [desc, setDesc] = useState('');
     const [descArabic, setDescArabic] = useState('');
     const [isBadFaith, setIsBadFaith] = useState(false);
+    const [selectedEvidenceId, setSelectedEvidenceId] = useState('');
 
     useEffect(() => {
         async function fetchTimeline() {
             try {
-                const { data, error } = await supabase
-                    .from('timeline_events')
-                    .select('*')
-                    .order('timestamp', { ascending: false });
+                const [timelineRes, evidenceRes] = await Promise.all([
+                    supabase
+                        .from('timeline_events')
+                        .select('*')
+                        .order('timestamp', { ascending: false }),
+                    supabase
+                        .from('evidence_vault')
+                        .select('id, title, file_url, evidence_files, category')
+                ]);
 
-                if (error) throw error;
+                if (timelineRes.error) throw timelineRes.error;
+                if (evidenceRes.data) setEvidenceDocs(evidenceRes.data as EvidenceDoc[]);
+
+                const data = timelineRes.data;
 
                 // Comprehensive Static Context Events
                 const staticEvents: TimelineEvent[] = [
@@ -408,7 +428,8 @@ export default function Timeline() {
             event_title: title,
             description: desc,
             arabic_translation: descArabic || undefined,
-            is_bad_faith_indicator: isBadFaith
+            is_bad_faith_indicator: isBadFaith,
+            proof_link_id: selectedEvidenceId || undefined
         };
 
         try {
@@ -423,7 +444,7 @@ export default function Timeline() {
             if (typedData) setEvents([typedData, ...events]);
 
             setShowAdd(false);
-            setTitle(''); setDesc(''); setDescArabic(''); setIsBadFaith(false);
+            setTitle(''); setDesc(''); setDescArabic(''); setIsBadFaith(false); setSelectedEvidenceId('');
         } catch (e: unknown) {
             console.error(e);
             const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
@@ -469,6 +490,16 @@ export default function Timeline() {
                         <div>
                             <label className="text-sm font-medium text-text-muted ml-1 block mb-1">Event Title</label>
                             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Email intercepted" className="w-full bg-bg-surface/80 border border-slate-700 rounded-xl px-4 py-2.5 text-text-main focus:border-blue-500 outline-none" />
+                        </div>
+
+                        <div>
+                            <label className="text-sm font-medium text-text-muted ml-1 block mb-1">Related Evidence (Optional)</label>
+                            <select value={selectedEvidenceId} onChange={(e) => setSelectedEvidenceId(e.target.value)} className="w-full bg-bg-surface/80 border border-slate-700 rounded-[12px] px-4 py-3 text-text-main focus:border-blue-500 outline-none appearance-none cursor-pointer">
+                                <option value="">-- No Evidence Linked --</option>
+                                {evidenceDocs.map(doc => (
+                                    <option key={doc.id} value={doc.id}>{doc.title}</option>
+                                ))}
+                            </select>
                         </div>
 
                         <DualLanguageInput
@@ -829,6 +860,21 @@ export default function Timeline() {
                                         <p className="text-sm text-text-muted leading-relaxed font-arabic whitespace-pre-wrap" dir="rtl">
                                             {selectedEvent.arabic_translation}
                                         </p>
+                                    </div>
+                                )}
+
+                                {selectedEvent.proof_link_id && (
+                                    <div className="pt-2">
+                                        <h4 className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3 border-b border-border-default pb-2">Related Evidence Document</h4>
+                                        <div className="flex items-center gap-3 bg-bg-surface-hover/50 p-3 rounded-xl border border-border-default/50">
+                                            <FileText className="w-5 h-5 text-primary shrink-0" />
+                                            <span className="text-sm font-medium text-text-main flex-1 truncate">
+                                                {evidenceDocs.find(d => d.id === selectedEvent.proof_link_id)?.title || 'Secured Vault Document'}
+                                            </span>
+                                            <Link to="/evidence" className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-primary hover:text-white bg-primary/10 hover:bg-primary px-3 py-2 rounded-lg border border-primary/20 transition-all flex items-center gap-1.5 shadow-sm">
+                                                <ExternalLink className="w-3 h-3" /> View in Vault
+                                            </Link>
+                                        </div>
                                     </div>
                                 )}
                             </div>

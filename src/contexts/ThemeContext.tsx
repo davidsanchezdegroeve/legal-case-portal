@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type Theme = 'dark' | 'light';
@@ -15,7 +16,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         if (savedTheme === 'dark' || savedTheme === 'light') {
             return savedTheme;
         }
-        return 'light'; // Default to light mode
+        return 'dark'; // Default to dark mode
     });
 
     useEffect(() => {

@@ -29,44 +29,70 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [profile, setProfile] = useState<AuthProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    const [isInitialized, setIsInitialized] = useState(false);
+
     useEffect(() => {
-        // Fetch initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            if (session?.user) {
-                fetchProfile(session.user.id);
-            } else {
-                setIsLoading(false);
+        let mounted = true;
+
+        async function initializeAuth() {
+            try {
+                // Fetch initial session
+                const { data: { session }, error } = await supabase.auth.getSession();
+
+                if (error) throw error;
+
+                if (mounted) {
+                    setSession(session);
+                    setUser(session?.user ?? null);
+
+                    if (session?.user) {
+                        await fetchProfile(session.user.id);
+                    } else {
+                        setIsLoading(false);
+                    }
+                    setIsInitialized(true);
+                }
+            } catch (err) {
+                console.error("Auth initialization failed:", err);
+                if (mounted) setIsLoading(false);
             }
-        });
+        }
+
+        initializeAuth();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (!mounted) return;
+
             setSession(session);
             setUser(session?.user ?? null);
 
             if (event === 'SIGNED_IN' && session?.user) {
-                try {
-                    await supabase.from('auth_logs').insert({
-                        user_id: session.user.id,
-                        email: session.user.email,
-                        event_type: 'login'
-                    });
-                } catch (e) {
-                    console.error('Failed to log sign in:', e);
-                }
+                // Fire and forget logging so we don't block the UI rendering on reload
+                supabase.from('auth_logs').insert({
+                    user_id: session.user.id,
+                    email: session.user.email,
+                    event_type: 'login'
+                }).then(({ error }) => {
+                    if (error) console.error('Failed to log sign in:', error);
+                });
             }
 
             if (session?.user) {
-                fetchProfile(session.user.id);
+                // Only fetch profile if we haven't already initialized it (avoids double fetch on initial load)
+                if (isInitialized) {
+                    await fetchProfile(session.user.id);
+                }
             } else {
                 setProfile(null);
                 setIsLoading(false);
             }
         });
 
-        return () => subscription.unsubscribe();
-    }, []);
+        return () => {
+            mounted = false;
+            subscription.unsubscribe();
+        };
+    }, [isInitialized]);
 
     const fetchProfile = async (userId: string) => {
         try {

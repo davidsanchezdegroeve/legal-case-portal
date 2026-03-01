@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-
-export const dynamic = 'force-dynamic';
+import { Link } from 'react-router-dom';
 import { UploadCloud, FileText, ExternalLink, ShieldCheck, FileBadge, TrendingUp, MessageSquare, Lock, Folders, Scale, X, Download, AlertTriangle, LayoutGrid, List } from 'lucide-react';
 import { DualLanguageInput } from '../components/ui/DualLanguageInput';
+
+export const dynamic = 'force-dynamic';
 
 const parseFiles = (filesData: unknown): string[] => {
     if (!filesData) return [];
@@ -40,6 +41,7 @@ export default function EvidenceGallery() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+    const [relatedEvents, setRelatedEvents] = useState<{ id: string, event_title: string, timestamp: string }[]>([]);
 
     const { profile } = useAuth();
     const isLawyerOrAdmin = profile?.role === 'lawyer' || profile?.role === 'admin';
@@ -51,6 +53,8 @@ export default function EvidenceGallery() {
     const [verificationCode, setVerificationCode] = useState('');
     const [newCategory, setNewCategory] = useState('General');
     const [isUploading, setIsUploading] = useState(false);
+    const [legalSignificanceEn, setLegalSignificanceEn] = useState('');
+    const [legalSignificanceAr, setLegalSignificanceAr] = useState('');
 
     useEffect(() => {
         async function fetchEvidence() {
@@ -68,10 +72,15 @@ export default function EvidenceGallery() {
                     const docsWithSnippets = await Promise.all((data as unknown as EvidenceDoc[]).map(async (row) => {
                         const doc: EvidenceDoc = { ...row };
 
-                        if (doc.highlight_snippet_url) {
+                        let targetUrl = doc.highlight_snippet_url;
+                        if (!targetUrl && doc.file_url && doc.file_url.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
+                            targetUrl = doc.file_url;
+                        }
+
+                        if (targetUrl) {
                             const { data: snippetData } = await supabase.storage
                                 .from('evidence-vault')
-                                .createSignedUrl(doc.highlight_snippet_url, 3600); // 1 hour cache
+                                .createSignedUrl(targetUrl, 3600); // 1 hour cache
                             if (snippetData) {
                                 doc._snippetSignedUrl = snippetData.signedUrl;
                             }
@@ -88,6 +97,23 @@ export default function EvidenceGallery() {
         }
         fetchEvidence();
     }, []);
+
+    useEffect(() => {
+        async function fetchRelatedEvents() {
+            if (!selectedEvidence?.id) {
+                setRelatedEvents([]);
+                return;
+            }
+            const { data } = await supabase
+                .from('timeline_events')
+                .select('id, event_title, timestamp')
+                .eq('proof_link_id', selectedEvidence.id)
+                .order('timestamp', { ascending: false });
+
+            if (data) setRelatedEvents(data);
+        }
+        fetchRelatedEvents();
+    }, [selectedEvidence?.id]);
 
     const handleUpload = async () => {
         if (!file || !title) return;
@@ -114,6 +140,8 @@ export default function EvidenceGallery() {
                     evidence_files: [filePath],
                     verification_code: verificationCode,
                     arabic_translation: titleAr || undefined,
+                    legal_significance_en: legalSignificanceEn || undefined,
+                    legal_significance_ar: legalSignificanceAr || undefined,
                 }
             ]).select().single();
 
@@ -124,7 +152,7 @@ export default function EvidenceGallery() {
             }
 
             setShowUpload(false);
-            setFile(null); setTitle(''); setTitleAr(''); setVerificationCode('');
+            setFile(null); setTitle(''); setTitleAr(''); setVerificationCode(''); setLegalSignificanceEn(''); setLegalSignificanceAr('');
 
         } catch (e: unknown) {
             const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
@@ -154,6 +182,27 @@ export default function EvidenceGallery() {
         }
     };
 
+    const ARABIC_TRANSLATIONS: Record<string, string> = {
+        "53861cf9-1ca7-4cfa-b846-39629b9c5b64": "سجل تجاري سعودي محدث من شهر أكتوبر يوضح تغيير الكيان إلى شركة ربحية.",
+        "cd506853-33e5-48ab-9553-09fb22e6ca45": "سجل تجاري سعودي محدث من شهر أكتوبر يوضح تغيير الكيان إلى شركة ربحية.",
+        "df78ed3d-a2c9-4c1e-91cf-6554cbb0bb42": "إثبات رفض توفير السكن يحتوي على رسائل ترفض دفع مبلغ 3,500 ريال سعودي.",
+        "0cb0d2fa-fcf4-412f-8f32-a053d5b448bd": "عقد التأسيس السعودي الموثق بتاريخ 7 أكتوبر 2025.",
+        "afb11235-3466-4051-ba81-d50ab3996092": "السجل التجاري السعودي الأصلي الصادر في يونيو 2025.",
+        "b0df9468-0c59-4e5f-a670-412a97e400b3": "سجلات تحويل الرواتب تثبت إيقاف الراتب الأسبوعي البالغ 6,000 ريال سعودي بعد 16 فبراير.",
+        "5aa0adb9-9292-403e-9cbf-b57babbed5f5": "المستند الانتقامي الذي يتهم ديفيد كذباً بـ \"الغياب غير المصرح به\" المرسل في 26 فبراير.",
+        "28a0ec34-327f-4f1e-b7f0-f69d7b400cea": "تم إعدادها في الأول من مارس لمفاوضات الموارد البشرية لعرض خيارات تسوية قبل الإجراءات العدائية النهائية.",
+        "488e4101-cc6c-48f5-a235-2478fdb348ae": "اتفاقية المؤسسين الأصلية الموقعة في 20 نوفمبر 2023.",
+        "bfe8f409-8e4f-4de9-af9b-32ce2851da91": "مسودة اتفاقية مؤسسين آمنة ومضادة تم إنشاؤها في 23 فبراير.",
+        "46484c4c-69d4-4e1a-8d44-5a1af266aa73": "لقطات شاشة من المطالبة القانونية ذات 24 ساعة التي قدمها المحامي عبدالعزيز إلى هاتف جوستافو المحمول في 26 فبراير.",
+        "8ba12175-f32e-4dac-b800-7ec7070e6d15": "لقطات شاشة من المطالبة القانونية ذات 24 ساعة التي قدمها المحامي عبدالعزيز إلى هاتف جوستافو المحمول في 26 فبراير.",
+        "6869b11a-825d-4a71-b1cd-c5a49986370e": "اتفاقية المؤسسين العدائية المكونة من 36 صفحة والتي قدمها جوستافو في 15 فبراير.",
+        "efb0c346-a118-4277-8ca9-ae78a34d7bb0": "إيصالات إقامة فندقية تثبت المصروفات الشخصية أثناء فترة التوقف عن دفع السكن.",
+        "cddbfac4-6ec5-45e6-b4c5-73d127761562": "إيصالات إقامة فندقية تثبت المصروفات الشخصية أثناء فترة التوقف عن دفع السكن.",
+        "d4f03314-ff29-487b-a5fd-226c18d136e5": "إيصالات إقامة فندقية تثبت المصروفات الشخصية أثناء فترة التوقف عن دفع السكن.",
+        "3723f14d-0341-4bd1-9bec-5366a2785370": "إثبات الاستشارة القانونية من منشآت مع المستشارة هند الشهري في 18 فبراير.",
+        "3229b806-0e47-4414-9fa4-14b7ae20814d": "إثبات الإقصاء الرقمي يوضح أنه تم إلغاء الوصول إلى جوجل وورك سبيس في 24 فبراير.",
+        "2921190a-d701-458c-8a1b-e743ec352163": "إثبات الإقصاء الرقمي يوضح أنه تم إلغاء الوصول إلى جوجل وورك سبيس في 24 فبراير."
+    };
 
     if (isLoading) {
         return (
@@ -197,6 +246,14 @@ export default function EvidenceGallery() {
                                 onChange={setTitle}
                                 onTranslated={setTitleAr}
                                 placeholder="e.g. Authenticated GOSI Certificate"
+                            />
+                            <DualLanguageInput
+                                label="Legal Context"
+                                value={legalSignificanceEn}
+                                onChange={setLegalSignificanceEn}
+                                onTranslated={setLegalSignificanceAr}
+                                placeholder="e.g. This document proves the termination date."
+                                isTextArea={true} // Add this if DualLanguageInput supports it, assuming it handles text well.
                             />
                             <div>
                                 <label className="text-xs font-bold text-text-muted uppercase tracking-widest ml-1 block mb-2">Category</label>
@@ -335,7 +392,7 @@ export default function EvidenceGallery() {
                                             {doc.arabic_translation && <p className="text-xs text-text-muted/80 font-arabic mb-4 line-clamp-2" dir="rtl">{doc.arabic_translation}</p>}
 
                                             {/* Bilingual Legal Significance */}
-                                            {(doc.legal_significance || doc.legal_significance_en || doc.legal_significance_ar) && (
+                                            {(doc.legal_significance || doc.legal_significance_en || doc.legal_significance_ar || ARABIC_TRANSLATIONS[doc.id]) && (
                                                 <div className="mb-4 p-4 rounded-xl bg-background-dark/40 border border-border-default text-sm shadow-inner overflow-hidden relative">
                                                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent-amber"></div>
                                                     <div className="flex items-center gap-2 mb-3">
@@ -352,10 +409,10 @@ export default function EvidenceGallery() {
                                                     )}
 
                                                     {/* Arabic Translation */}
-                                                    {doc.legal_significance_ar && (
-                                                        <div className={(doc.legal_significance || doc.legal_significance_en) ? "border-t border-border-default/50 pt-3" : ""}>
-                                                            <span className="text-[10px] font-bold text-accent-amber/80 uppercase tracking-widest mb-1 block text-right">الترجمة العربية</span>
-                                                            <p className="text-text-muted/80 text-xs leading-relaxed font-arabic text-left" dir="rtl">{doc.legal_significance_ar}</p>
+                                                    {(doc.legal_significance_ar || ARABIC_TRANSLATIONS[doc.id]) && (
+                                                        <div className={(doc.legal_significance || doc.legal_significance_en) ? "border-t border-accent-amber/30 pt-3 mt-3" : ""}>
+                                                            <span className="text-[10px] font-bold text-accent-amber uppercase tracking-widest mb-1 block text-right">الترجمة العربية</span>
+                                                            <p className="text-text-muted/80 text-xs leading-relaxed font-arabic text-right" dir="rtl">{doc.legal_significance_ar || ARABIC_TRANSLATIONS[doc.id]}</p>
                                                         </div>
                                                     )}
                                                 </div>
@@ -498,7 +555,7 @@ export default function EvidenceGallery() {
                                             {doc.arabic_translation && <p className="text-xs text-text-muted/80 font-arabic mb-5 line-clamp-2" dir="rtl">{doc.arabic_translation}</p>}
 
                                             {/* Bilingual Legal Significance */}
-                                            {(doc.legal_significance || doc.legal_significance_en || doc.legal_significance_ar) && (
+                                            {(doc.legal_significance || doc.legal_significance_en || doc.legal_significance_ar || ARABIC_TRANSLATIONS[doc.id]) && (
                                                 <div className="my-5 p-4 rounded-xl bg-background-dark/40 border border-border-default text-sm shadow-inner overflow-hidden relative">
                                                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent-amber"></div>
                                                     <div className="flex items-center gap-2 mb-3">
@@ -515,12 +572,33 @@ export default function EvidenceGallery() {
                                                     )}
 
                                                     {/* Arabic Translation */}
-                                                    {doc.legal_significance_ar && (
+                                                    {(doc.legal_significance_ar || ARABIC_TRANSLATIONS[doc.id]) && (
                                                         <div className={(doc.legal_significance || doc.legal_significance_en) ? "border-t border-border-default/50 pt-3" : ""}>
                                                             <span className="text-[10px] font-bold text-accent-amber/80 uppercase tracking-widest mb-1 block text-right">الترجمة العربية</span>
-                                                            <p className="text-text-muted/80 text-xs leading-relaxed font-arabic text-left" dir="rtl">{doc.legal_significance_ar}</p>
+                                                            <p className="text-text-muted/80 text-xs leading-relaxed font-arabic text-left" dir="rtl">{doc.legal_significance_ar || ARABIC_TRANSLATIONS[doc.id]}</p>
                                                         </div>
                                                     )}
+                                                </div>
+                                            )}
+
+                                            {/* Related Timeline Events */}
+                                            {relatedEvents.length > 0 && (
+                                                <div className="my-5 p-4 rounded-xl bg-primary/5 border border-primary/20 text-sm overflow-hidden relative">
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <Folders className="w-4 h-4 text-primary" />
+                                                        <span className="font-bold text-[10px] uppercase tracking-widest text-text-main">Linked Timeline Events</span>
+                                                    </div>
+                                                    <div className="flex flex-col gap-2 relative z-10">
+                                                        {relatedEvents.map(ev => (
+                                                            <Link key={ev.id} to={`/timeline`} className="group flex items-center justify-between p-3 rounded-lg bg-background-dark/50 border border-border-default hover:border-primary/30 transition-all">
+                                                                <div className="flex flex-col gap-1">
+                                                                    <span className="text-xs font-bold text-text-main group-hover:text-primary transition-colors">{ev.event_title}</span>
+                                                                    <span className="text-[10px] uppercase tracking-widest text-text-muted">{new Date(ev.timestamp).toLocaleDateString()}</span>
+                                                                </div>
+                                                                <ExternalLink className="w-3 h-3 text-text-muted group-hover:text-primary" />
+                                                            </Link>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             )}
 
@@ -650,11 +728,11 @@ export default function EvidenceGallery() {
                                         </div>
                                     )}
                                     {selectedEvidence.legal_significance_ar && (
-                                        <div className={`flex items-start gap-4 flex-row-reverse ${(selectedEvidence.legal_significance || selectedEvidence.legal_significance_en) ? 'border-t border-border-default/50 pt-4' : ''}`}>
+                                        <div className={`flex items-start gap-4 flex-row-reverse ${(selectedEvidence.legal_significance || selectedEvidence.legal_significance_en) ? 'border-t border-accent-amber/30 pt-4 mt-2' : ''}`}>
                                             <Scale className="w-5 h-5 text-accent-amber shrink-0 mt-1" />
                                             <div className="w-full text-right">
-                                                <span className="text-[10px] font-bold text-accent-amber/80 uppercase tracking-widest mb-1 block">الترجمة العربية</span>
-                                                <p className="text-sm font-medium text-text-main/80 leading-relaxed font-arabic" dir="rtl">
+                                                <span className="text-[10px] font-bold text-accent-amber uppercase tracking-widest mb-1 block">الترجمة العربية</span>
+                                                <p className="text-sm font-medium text-text-main/80 leading-relaxed font-arabic text-right" dir="rtl">
                                                     {selectedEvidence.legal_significance_ar}
                                                 </p>
                                             </div>
@@ -676,10 +754,21 @@ export default function EvidenceGallery() {
                                     className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl relative z-10 border border-border-default/30"
                                 />
                             ) : (
-                                <div className="text-center text-text-muted/50 relative z-10">
+                                <div className="text-center text-text-muted/50 relative z-10 flex flex-col items-center">
                                     <FileBadge className="w-20 h-20 mx-auto mb-6 opacity-30" />
                                     <p className="font-bold tracking-widest uppercase text-xs">VISUAL EVIDENCE UNAVAILABLE</p>
-                                    <p className="text-[10px] mt-2 max-w-xs mx-auto">This asset requires original document extraction to view securely.</p>
+                                    <p className="text-[10px] mt-2 max-w-xs mx-auto mb-6">This asset requires original document extraction to view securely.</p>
+                                    {selectedEvidence.file_url && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleViewDocument(selectedEvidence.file_url!);
+                                            }}
+                                            className="px-6 py-2.5 bg-bg-surface-hover hover:bg-bg-surface text-text-main rounded-xl flex items-center gap-2 text-xs font-black tracking-widest uppercase transition-all border border-border-default shadow-sm hover:shadow-md"
+                                        >
+                                            <ExternalLink className="w-4 h-4 shrink-0" /> View Full Document
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </div>

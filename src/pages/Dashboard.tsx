@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
-import { Scale, FileText, ArrowRight, Map, History, Verified, ShieldCheck, ShieldAlert, FileWarning, Gavel, AlertTriangle } from 'lucide-react';
+import { Scale, FileText, ArrowRight, Map, History, Verified, ShieldCheck, ShieldAlert, FileWarning, Gavel, AlertTriangle, X } from 'lucide-react';
 import { TranslatedText } from '../components/ui/TranslatedText';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -12,9 +12,20 @@ interface AuthLog {
     created_at: string;
 }
 
+interface Claim {
+    id: string;
+    item: string;
+    status: string;
+    calculated_debt: number | null;
+    actual_paid_sar: number | null;
+    created_at: string;
+}
+
 export default function Dashboard() {
     const { profile, session } = useAuth();
     const [totalDebt, setTotalDebt] = useState<number>(0);
+    const [claimsData, setClaimsData] = useState<Claim[]>([]);
+    const [showDebtModal, setShowDebtModal] = useState(false);
     const [unpaidWeeks, setUnpaidWeeks] = useState<number>(0);
     const [evidenceCount, setEvidenceCount] = useState<number>(0);
     const [authLogs, setAuthLogs] = useState<AuthLog[]>([]);
@@ -33,10 +44,9 @@ export default function Dashboard() {
                 if (claimsError) throw claimsError;
 
                 if (claims) {
-                    // Base unpaid salary (6,000) + Unpaid rent (3,500) = 9,500 SAR static withheld amount
-                    const baseStaticDebt = 9500;
                     const total = claims.reduce((sum, current) => sum + (current.calculated_debt || 0), 0);
-                    setTotalDebt(total + baseStaticDebt);
+                    setTotalDebt(total);
+                    setClaimsData(claims as Claim[]);
 
                     // Check for economic duress markers
                     const unpaid = claims.filter(c => c.status === 'Not Received' && c.item.includes('Weekly Payment')).length;
@@ -163,12 +173,17 @@ export default function Dashboard() {
                 {/* Primary KPI Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     {/* Debt Card */}
-                    <div className="glass-card rounded-2xl p-6 relative overflow-hidden group hover:border-border-hover transition-colors">
-                        <p className="text-text-muted text-xs font-bold uppercase tracking-wider mb-4">Total Calculated Debt</p>
+                    <div onClick={() => setShowDebtModal(true)} className="glass-card rounded-2xl p-6 relative overflow-hidden group hover:border-primary/50 cursor-pointer transition-colors">
+                        <p className="text-text-muted text-xs font-bold uppercase tracking-wider mb-4 flex justify-between items-center">
+                            Total Calculated Debt
+                            <span className="text-[10px] bg-primary/20 text-primary px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                VIEW BREAKDOWN <ArrowRight className="w-3 h-3" />
+                            </span>
+                        </p>
                         <div className="flex items-end gap-2">
-                            <span className="text-4xl font-black text-text-main">{formatCurrency(totalDebt)}</span>
+                            <span className="text-4xl font-black text-text-main group-hover:text-primary transition-colors">{formatCurrency(totalDebt)}</span>
                         </div>
-                        <p className="text-[10px] text-text-muted mt-2 font-medium">Includes 9,500 SAR withheld + 45k/mo opportunity loss</p>
+                        <p className="text-[10px] text-text-muted mt-2 font-medium group-hover:text-text-muted/80 transition-colors">Includes 9,500 SAR withheld + 45k/mo opportunity loss</p>
                         <div className="mt-5 h-1.5 w-full bg-border-default/50 rounded-full overflow-hidden">
                             <div className="h-full bg-accent-neon w-[65%] rounded-full shadow-[0_0_10px_rgba(0,242,255,0.6)]"></div>
                         </div>
@@ -514,6 +529,81 @@ export default function Dashboard() {
                     </div>
                 </div>
             </aside>
+
+            {/* Financial Breakdown Modal */}
+            {showDebtModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 pb-20 sm:pb-6 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-background-dark/80 backdrop-blur-sm" onClick={() => setShowDebtModal(false)}></div>
+                    <div className="glass-card w-full max-w-4xl max-h-[90vh] flex flex-col rounded-2xl border border-primary/30 shadow-[0_0_40px_rgba(19,127,236,0.15)] relative overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
+
+                        {/* Modal Header */}
+                        <div className="p-6 md:p-8 flex items-center justify-between border-b border-border-default/50 bg-bg-surface/50">
+                            <div>
+                                <h2 className="text-2xl font-black text-text-main flex items-center gap-3 tracking-tight">
+                                    <Scale className="w-6 h-6 text-primary" />
+                                    Financial Damages Breakdown
+                                </h2>
+                                <p className="text-xs text-text-muted mt-2 uppercase tracking-widest font-bold">Line-item verified claims backing {formatCurrency(totalDebt)}</p>
+                            </div>
+                            <button
+                                onClick={() => setShowDebtModal(false)}
+                                className="p-2 bg-background-dark/50 hover:bg-rose-500/20 text-text-muted hover:text-rose-400 rounded-xl transition-all border border-border-default hover:border-rose-500/30"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Modal Body */}
+                        <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar flex-1 bg-background-dark/30">
+                            <div className="w-full overflow-x-auto">
+                                <table className="w-full text-left text-sm whitespace-nowrap md:whitespace-normal">
+                                    <thead>
+                                        <tr className="border-b border-border-default text-text-muted/70">
+                                            <th className="pb-3 pt-2 font-bold uppercase tracking-wider text-[10px] px-4">Claim Item</th>
+                                            <th className="pb-3 pt-2 font-bold uppercase tracking-wider text-[10px] px-4">Status</th>
+                                            <th className="pb-3 pt-2 font-bold uppercase tracking-wider text-[10px] px-4 text-right">Actual Paid</th>
+                                            <th className="pb-3 pt-2 font-bold uppercase tracking-wider text-[10px] px-4 text-right text-primary">Calculated Debt</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-border-default/30">
+                                        {claimsData.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((claim, idx) => (
+                                            <tr key={claim.id || idx} className="group hover:bg-white/5 transition-colors">
+                                                <td className="py-4 px-4 font-medium text-text-main">
+                                                    {claim.item}
+                                                    {claim.item.includes('Opportunity') && <span className="ml-2 text-[9px] bg-accent-neon/10 text-accent-neon px-2 py-0.5 rounded uppercase tracking-wider">Major Element</span>}
+                                                </td>
+                                                <td className="py-4 px-4">
+                                                    <span className={`text-[10px] px-2.5 py-1 rounded-md font-bold uppercase tracking-widest ${claim.status === 'Not Received' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : claim.status === 'Received' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-accent-amber/10 text-accent-amber border border-accent-amber/20'}`}>
+                                                        {claim.status}
+                                                    </span>
+                                                </td>
+                                                <td className="py-4 px-4 text-right font-medium text-text-muted">
+                                                    {claim.actual_paid_sar !== null && claim.actual_paid_sar !== undefined ? formatCurrency(claim.actual_paid_sar) : '-'}
+                                                </td>
+                                                <td className="py-4 px-4 text-right font-black text-primary group-hover:text-accent-neon transition-colors">
+                                                    {claim.calculated_debt ? formatCurrency(claim.calculated_debt) : '-'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="p-6 border-t border-border-default bg-bg-surface-hover/50 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <p className="text-xs text-text-muted max-w-md leading-relaxed">
+                                <strong className="text-text-main">Notice:</strong> These figures represent actual direct damages and opportunity cost backed by the Evidence Vault. They do not include supplementary punitive damages for bad faith under Saudi Law.
+                            </p>
+                            <div className="text-right">
+                                <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1">Cumulative Proven Debt</p>
+                                <p className="text-3xl font-black text-primary drop-shadow-[0_0_15px_rgba(19,127,236,0.5)]">{formatCurrency(totalDebt)}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
